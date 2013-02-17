@@ -1,0 +1,24 @@
+@charset "utf-8";
+
+body {
+  margin: 0;
+  padding: 60px 0 25px 0;
+}
+
+header {
+  position: fixed !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+}
+
+footer {
+  position: fixed !important;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25px;
+}
