@@ -1,24 +1,66 @@
-@charset "utf-8";
+@charset"utf-8";
 
 body {
-  margin: 0;
-  padding: 60px 0 25px 0;
+    margin: 0;
+    padding: 40px 0 25px 0;
 }
-
 header {
-  position: fixed !important;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px;
+    position: fixed !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+}
+footer {
+    position: fixed !important;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 25px;
+}
+.container{
+    position: absolute;
+    top: 41px;
+    right: 0;
+    bottom: 26px;;
+    left: 0;
+}
+#main {
+    height: 100%;
 }
 
+/* defaultのwidthを100%で上書き */
+@media (min-width: 1200px) {
+    .container, 
+    .navbar-static-top 
+    .container, 
+    .navbar-fixed-top 
+    .container, 
+    .navbar-fixed-bottom 
+    .container {
+        width: 100%;
+    }
+}
+
+@media screen {
+  .container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .row-fluid [class*="span"] {
+    margin-left: 0;
+  }
+}
+
+/* borderで見やすく（仮）*/
+#history, 
+#search_results, 
+header, 
 footer {
-  position: fixed !important;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 25px;
+    border: 1px solid #999;
 }

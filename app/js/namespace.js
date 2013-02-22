@@ -1,5 +1,7 @@
-var SPA = {
+var MyApp = {
     Models: {},
+    Collections: {},
     Views: {},
-    App: {}
+    App: {},
+    Mediator: {}
 };

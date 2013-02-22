@@ -20,36 +20,7 @@
 
   <!--app root  -->
   <div id="app" class="container"></div>
-
-  <!--templates  -->
   
-  <script type="text/template" id="tmpl_layout">
-    <header id="search_bar" class="navbar navbar-inverse navbar-fixed-top"></header>
-    <div id="content" class="container-fluid">
-    　<div class="row-fluid">
-        <div id="history" class="span2"></div>
-        <div id="search_results" class="span10"></div>
-      </div>
-    </div>
-    <footer id="footer" class="footer"></footer>
-  </script> 
-  
-  <script type="text/template" id="tmpl_search_bar">
-    <h1 class='placeholder'>SEARCH_BAR PLACEHOLDER</h1>
-  </script> 
-  
-  <script type="text/template" id="tmpl_history">
-    <h1 class='placeholder'>HISTORY PLACEHOLDER</h1>
-  </script>
-  
-  <script type="text/template" id="tmpl_search_results">
-    <h1 class='placeholder'>SEARCH_RESULT PLACEHOLDER</h1>
-  </script> 
-   
-  <script type="text/template" id="tmpl_footer">
-    <h1 class='placeholder'>FOOTER PLACEHOLDER</h1>
-  </script> 
-
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -57,8 +28,10 @@
   <script type="text/javascript" src="assets/js/bootstrap-2.3.0.js"></script>
   <script type="text/javascript" src="assets/js/underscore-1.4.4.js"></script>
   <script type="text/javascript" src="assets/js/backbone-0.9.10.js"></script>
+  <script type="text/javascript" src="assets/js/backbone.localStorage-1.1.0.js"></script>
  
   <script type="text/javascript" src="js/namespace.js"></script>
+  <script type="text/javascript" src="js/collections/search_list.js"></script>
   <script type="text/javascript" src="js/views/search_bar.js"></script>
   <script type="text/javascript" src="js/views/search_results.js"></script>
   <script type="text/javascript" src="js/views/history.js"></script>
