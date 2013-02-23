@@ -26,7 +26,8 @@ MyApp.Views.History = Backbone.View.extend({
     
     this.$el.html(this.tmpl(this.searches.models));
     
-    MyApp.Mediator.on('add:search', this.addSearch, this);
+    MyApp.Mediator.on('search', this.addSearch, this);
+    
     this.searches.on('add remove', this.render, this);
     
   },

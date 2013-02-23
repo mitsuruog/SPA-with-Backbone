@@ -13,8 +13,16 @@ MyApp.App = Backbone.View.extend({
     '<footer id="footer" class="footer"></footer>'
   ),
 
+  tmplTwitter: _.template(
+    ''
+  ),
+  
+  tmplAmazon: _.template(
+    ''
+  ),
+  
   events: {
-    'search #search_bar': 'newSerach'
+//    'search #search_bar': 'newSerach'
   },
 
   initialize: function() {
@@ -33,19 +41,27 @@ MyApp.App = Backbone.View.extend({
       el: this.$el.find('#search_bar')
     });
 
-    this.searchResult = new MyApp.Views.SearchResults({
-      el: this.$el.find('#search_results')
+    this.tabs = new MyApp.Views.Tabs({
+      el : ''
     });
+
+    this.twitterResult = new MyApp.Views.SearchResults({
+      el: this.$el.find('#search_results'),
+      collections: new MyApp.Collections.TwitterList(),
+      tmpl: this.tmplTwitter
+    });
+    
+//    this.amazonResult = new MyApp.Views.SearchResults({
+//      el: this.$el.find('#search_results'),
+//      model: MyApp.Models.Amazon,
+//      tmpl: this.tmplAmazon
+//    });
     
     this.footer = new MyApp.Views.Footer({
       el: this.$el.find('#footer')
     });
     
   },
-  
-  newSerach: function(e, search){
-    MyApp.Mediator.trigger('add:search', search);
-  }
 
 });
 

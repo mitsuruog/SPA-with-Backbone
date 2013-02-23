@@ -28,12 +28,12 @@ MyApp.Views.SearchBar = Backbone.View.extend({
       query = $('#query').val();
     
     if(twitterChecked){
-      this.$el.trigger('search', {
+      MyApp.Mediator.trigger('search', {
         query: query,
         service: 'twitter'
       });
     }else if(amazonChecked){
-      this.$el.trigger('search', {
+      MyApp.Mediator.trigger('search', {
         query: query,
         service: 'amazon'
       });
