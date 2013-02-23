@@ -5,7 +5,7 @@ MyApp.App = Backbone.View.extend({
   tmpl: _.template(
     '<header id="search_bar"></header>' +
     '<div id="main" class="container-fluid">' +
-    '  　<div class="row-fluid">' +
+    '    <div class="row-fluid">' +
     '    <div id="history" class="span2"></div>' +
     '    <div id="search_results" class="span10"></div>' +
     '  </div>' +
@@ -14,7 +14,13 @@ MyApp.App = Backbone.View.extend({
   ),
 
   tmplTwitter: _.template(
-    ''
+    '<ul>' +
+    '<% _.each(obj, function(twitter){  %>' +
+    '  <li>' +
+    '    <div class="form_user"><%- twitter.from_user %></div>' +
+    '  </li>' +
+    '<% }); %>' +
+    '</ul>'
   ),
   
   tmplAmazon: _.template(
