@@ -15,9 +15,12 @@ MyApp.App = Backbone.View.extend({
 
   tmplTwitter: _.template(
     '<ul>' +
-    '<% _.each(obj, function(twitter){  %>' +
+    '<% _.each(obj, function(tweet){  %>' +
     '  <li>' +
-    '    <div class="form_user"><%- twitter.from_user %></div>' +
+    '    <span class="img"><img src="<%= tweet.profile_image_url %>"></span>' +
+    '    <span class="author"><a href="https://twitter.com/<%= tweet.from_user %>" target="_blank">@<%= tweet.from_user %></span>' +
+    '    <span class="body"><%- tweet.text_linked %></span>' +
+    '    <span class="time"><a href="https://twitter.com/<%= tweet.from_user %>/status/<%= tweet.id_str %>" target="_blank"><%= tweet.created_at %></a></span>' +
     '  </li>' +
     '<% }); %>' +
     '</ul>'

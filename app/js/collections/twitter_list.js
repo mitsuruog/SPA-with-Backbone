@@ -5,23 +5,17 @@ MyApp.Collections.TwitterList = Backbone.Collection.extend({
   model: MyApp.Models.Twitter,
   
   search: function(param){
-    var modelClass = this.model;
+    var _this = this;
     
-    this.fetch({
-      url: this.urlRoot + '?q=' + encodeURIComponent(param.query),
+    $.ajax({
+      url: this.urlRoot,
       dataType: 'jsonp',
-      success: function(model, response, options){
-        var models = [];
-        
-        _.each(response && response.results, function(data){
-         models.push(new modelClass(data));
-        });
-        
-        MyApp.Mediator.trigger('search:success', models);
-      },
-      silent: true
+      data: {q:  encodeURIComponent(param.query)},
+    }).done(function(data){
+      _this.reset(data.results);
+    }).fail(function(){
+      MyApp.Mediator.trigger('error', arguments);
     });
-    
   }
   
 });

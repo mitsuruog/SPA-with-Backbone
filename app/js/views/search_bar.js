@@ -38,7 +38,7 @@ MyApp.Views.SearchBar = Backbone.View.extend({
         service: 'amazon'
       });
     }else{
-      console.log('不正な検索サービスが選択されています。');
+      MyApp.Mediator.on('error', '不正な検索サービスが選択されています。');
     }
     
   }

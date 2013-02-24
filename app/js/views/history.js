@@ -19,16 +19,19 @@ MyApp.Views.History = Backbone.View.extend({
   },
   
   initialize: function() {
+  
+    _.bindAll(this);
     
     this.searches = this.options.searches;
     
     this.searches.fetch();
     
+    //TODO 本当はrenderで統一したい。
     this.$el.html(this.tmpl(this.searches.models));
     
-    MyApp.Mediator.on('search', this.addSearch, this);
+    MyApp.Mediator.on('search', this.addSearch);
     
-    this.searches.on('add remove', this.render, this);
+    this.searches.on('add remove', this.render);
     
   },
   
