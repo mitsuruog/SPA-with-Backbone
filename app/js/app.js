@@ -7,7 +7,20 @@ MyApp.App = Backbone.View.extend({
     '<div id="main" class="container-fluid">' +
     '    <div class="row-fluid">' +
     '    <div id="history" class="span2"></div>' +
-    '    <div id="search_results" class="span10"></div>' +
+    '    <div id="search_results" class="span10">' +
+    '      <ul class="nav nav-tabs">' +
+    '        <li class="active" data-toggle="tab">' +
+    '          <a href="#twitter_list">Twitter</a>' +
+    '        </li>' +
+    '        <li class="" data-toggle="tab">' +
+    '          <a href="#amazon_list">Amazon</a>' +
+    '        </li>' +
+    '      </ul>' +
+    '      <div class="tab-content">' +
+    '        <div class="tab-pane active" id="twitter_list"></div>' +
+    '        <div class="tab-pane" id="amazon_list"></div>' +
+    '      </div>' +
+    '    </div>' +
     '  </div>' +
     '</div>' +
     '<footer id="footer" class="footer"></footer>'
@@ -55,7 +68,7 @@ MyApp.App = Backbone.View.extend({
     });
 
     this.twitterResult = new MyApp.Views.SearchResults({
-      el: this.$el.find('#search_results'),
+      el: $('#twitter_list'),
       collections: new MyApp.Collections.TwitterList(),
       tmpl: this.tmplTwitter
     });

@@ -10,7 +10,7 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    height: 40px;
+    height: 26px;
 }
 footer {
     position: fixed !important;
@@ -20,15 +20,24 @@ footer {
     width: 100%;
     height: 25px;
 }
-.container{
+.container {
     position: absolute;
-    top: 41px;
+    top: 27px;
     right: 0;
-    bottom: 26px;;
+    bottom: 26px;
     left: 0;
 }
 #main {
     height: 100%;
+}
+
+header .container,
+footer .container {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    color: #E3E3E3;
 }
 
 /* defaultのwidthを100%で上書き */
@@ -57,10 +66,33 @@ footer {
   }
 }
 
+#btn-search {
+  margin-right: 10px;
+}
+
 /* borderで見やすく（仮）*/
 #history, 
 #search_results, 
 header, 
 footer {
     border: 1px solid #999;
+}
+
+/*----------- bootstrap-narrowバグ（？） ---------------*/
+
+.btn-mini [class^="icon-"],
+.btn-mini [class*=" icon-"] {
+  margin-top: 0;
+}
+.btn {
+  line-height: 19px;
+}
+input[type="radio"], 
+input[type="checkbox"] {
+  margin: 0;
+}
+.navbar-inverse .navbar-search .search-query:focus,
+.navbar-inverse .navbar-search .search-query.focused {
+  padding: 0 7px;
+  border: 1px solid #111111;
 }
