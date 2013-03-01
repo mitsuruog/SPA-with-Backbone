@@ -68,7 +68,7 @@ MyApp.App = Backbone.View.extend({
     });
 
     this.twitterResult = new MyApp.Views.SearchResults({
-      el: $('#twitter_list'),
+      el: this.$el.find('#twitter_list'),
       collections: new MyApp.Collections.TwitterList(),
       tmpl: this.tmplTwitter
     });
@@ -83,7 +83,7 @@ MyApp.App = Backbone.View.extend({
       el: this.$el.find('#footer')
     });
     
-  },
+  }
 
 });
 

@@ -10,11 +10,17 @@ MyApp.Collections.TwitterList = Backbone.Collection.extend({
     $.ajax({
       url: this.urlRoot,
       dataType: 'jsonp',
-      data: {q:  encodeURIComponent(param.query)},
+      data: {
+        q: encodeURIComponent(param.query)
+      }
     }).done(function(data){
+      
       _this.reset(data.results);
+      
     }).fail(function(){
+      
       MyApp.Mediator.trigger('error', arguments);
+      
     });
   }
   
