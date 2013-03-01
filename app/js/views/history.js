@@ -23,8 +23,9 @@ MyApp.Views.History = Backbone.View.extend({
   '<% });  %>'),
 
   events: {
-    'click .btn-delete': 'removeSearch',
-    'click': 'selectSearch'
+    'click .btn-delete': 'removeHistory',
+    'click .query': 'selectHistory',
+    'click .service': 'selectHistory'
   },
 
   /**
@@ -43,7 +44,7 @@ MyApp.Views.History = Backbone.View.extend({
     //TODO 本当はrenderで統一したい。
     this.$el.html(this.tmpl(this.searches.models));
 
-    MyApp.Mediator.on('search:add', this.addSearch);
+    MyApp.Mediator.on('history:add', this.addHistory);
 
     this.searches.on('add remove', this.render);
 
@@ -51,11 +52,11 @@ MyApp.Views.History = Backbone.View.extend({
 
   /**
    * 検索履歴追加
-   * @method addSearch
+   * @method addHistory
    * @type {Function}
    * @param {Object} search searchModelオブジェクト
    */
-  addSearch: function(search) {
+  addHistory: function(search) {
 
     search.id = +new Date();
     this.searches.create(search);
@@ -64,11 +65,11 @@ MyApp.Views.History = Backbone.View.extend({
 
   /**
    * 検索履歴削除
-   * @method removeSearch
+   * @method removeHistory
    * @type {Function}
    * @param {Object} e Mouseイベント
    */
-   removeSearch: function(e) {
+   removeHistory: function(e) {
 
     var id = this._getSearch(e).id;
     this.searches.get(id).destroy();
@@ -77,13 +78,14 @@ MyApp.Views.History = Backbone.View.extend({
 
   /**
    * 検索履歴選択
-   * @method selectSearch
+   * @method selectHistory
    * @type {Function}
    * @param {Object} e Mouseイベント
    */
-   selectSearch: function(e) {
+   selectHistory: function(e) {
 
-    MyApp.Mediator.trigger('search:history', this._getSearch(e));
+    var search = this._getSearch(e);
+    MyApp.Mediator.trigger('search:history:' + search.service, search);
 
   },
 

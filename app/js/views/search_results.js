@@ -6,8 +6,9 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 
     this.collections = options.collections;
     this.tmpl = options.tmpl;
+    this.service = options.service;
     
-    MyApp.Mediator.on('search:add search:history', this.search);
+    MyApp.Mediator.on('search:add:' + this.service + ' search:history:' + this.service, this.search);
     
     this.collections.on('reset', this.render);
   },

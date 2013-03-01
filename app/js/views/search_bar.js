@@ -11,7 +11,7 @@ MyApp.Views.SearchBar = Backbone.View.extend({
     '            <input type="text" name="query" id="query" value="" class="search-query" />' +
     '            <button id="btn-search" class="btn btn-primary">検索</button>' +
     '          </div>' +
-    '          <input type="radio" name="service" id="twitter" value="twitter" checked />' +
+    '          <input type="radio" name="service" id="twitter" value="twitter" />' +
     '          <label for="twitter" class="inline">Twitter</label>' +
     '          <input type="radio" name="service" id="amazon" value="amazon" />' +
     '          <label for="amazon">amazon</label>' +
@@ -33,29 +33,22 @@ MyApp.Views.SearchBar = Backbone.View.extend({
   
   initialize: function() {
     this.$el.html(this.tmpl());
+    this.$el.find('#twitter').attr('checked', true);
   },
   
   search: function(e){
     
-    var twitterChecked = $('#twitter').attr('checked'),
-      amazonChecked = $('#amazon').attr('checked'),
-      query = $('#query').val();
+    var $checked = this.$el.find('input[type=radio]:checked'),
+      query = $('#query').val(),
+      service = $checked.val(),
+      search = {};
     
     e.preventDefault();
     
-    if(twitterChecked){
-      MyApp.Mediator.trigger('search:add', {
-        query: query,
-        service: 'twitter'
-      });
-    }else if(amazonChecked){
-      MyApp.Mediator.trigger('search:add', {
-        query: query,
-        service: 'amazon'
-      });
-    }else{
-      console.log('不正な検索サービスが選択されています。');
-    }
+    search.query = query;
+    search.service = service;
+    
+    MyApp.Mediator.trigger('search:add:' + service + ' history:add', search);
     
   }
 

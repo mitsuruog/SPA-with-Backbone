@@ -70,7 +70,8 @@ MyApp.App = Backbone.View.extend({
     this.twitterResult = new MyApp.Views.SearchResults({
       el: this.$el.find('#twitter_list'),
       collections: new MyApp.Collections.TwitterList(),
-      tmpl: this.tmplTwitter
+      tmpl: this.tmplTwitter,
+      service: 'twitter'
     });
     
 //    this.amazonResult = new MyApp.Views.SearchResults({
