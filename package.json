@@ -1,0 +1,12 @@
+{
+  "name": "spa-with-backbone",
+  "description": "Single page application build with Backbone.js",
+  "version": "0.1.0",
+  "url": "https://github.com/mitsuruog/SPA-with-Backbone",
+  "devDependencies": {
+    "grunt": "0.4.0",
+    "grunt-contrib-jshint": "0.2.0",
+    "grunt-contrib-watch": "0.3.1",
+    "grunt-contrib-yuidoc": "0.4.0"
+  }
+}
