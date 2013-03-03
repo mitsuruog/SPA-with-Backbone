@@ -10,18 +10,8 @@ MyApp.Views.History = Backbone.View.extend({
    * @method tmpl
    * @type {Function}
    */
-  tmpl: _.template('<% _.each(obj, function(search){  %>' +
-  '<ul class="search" data-id="<%= search.attributes.id %>">' +
-  '  <li class="query"><%- search.attributes.query %></li>' +
-  '  <li class="service">(<%- search.attributes.service %>)</li>' +
-  '  <li class="search-buttons">' +
-  '    <button class="btn btn-mini btn-danger btn-delete">' +
-  '      <i class="icon-remove-sign icon-white"></i>' +
-  '    </button>' +
-  '  </li>' +
-  '</ul>' +
-  '<% });  %>'),
-
+  tmpl: MyApp.Templates.history,
+  
   events: {
     'click .btn-delete': 'removeHistory',
     'click .query': 'selectHistory',
@@ -42,7 +32,7 @@ MyApp.Views.History = Backbone.View.extend({
     this.searches.fetch();
 
     //TODO 本当はrenderで統一したい。
-    this.$el.html(this.tmpl(this.searches.models));
+    this.$el.html(this.tmpl({history: this.searches.toJSON()}));
 
     MyApp.Mediator.on('history:add', this.addHistory);
 
