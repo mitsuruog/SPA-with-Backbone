@@ -1,14 +1,12 @@
 <ul>
-  {{#each tweet}}
+  {{#each models}}
     <li>
       <span class="img">
         <img src="{{this.profile_image_url}}">
       </span>
       <span class="author">
         <a href="https://twitter.com/{{this.from_user}}" target="_blank">@{{this.from_user}}</span>
-
         <span class="body">{{this.text_linked}}</span>
-
         <span class="time"><a href="https://twitter.com/{{this.from_user}}/status/{{this.id_str}}" target="_blank">{{this.created_at}}</a>
       </span>
     </li>
