@@ -6,14 +6,8 @@ MyApp.App = Backbone.View.extend({
   
   tmplTwitter: MyApp.Templates.twitter,
   
-  tmplAmazon: _.template(
-    ''
-  ),
-  
-  events: {
-//    'search #search_bar': 'newSerach'
-  },
-
+  tmplHotpepper: MyApp.Templates.hotpepper,
+    
   initialize: function() {
     
     //Mediator作成
@@ -40,14 +34,15 @@ MyApp.App = Backbone.View.extend({
       tmpl: this.tmplTwitter,
       service: 'twitter'
     });
-    
-//    this.amazonResult = new MyApp.Views.SearchResults({
-//      el: this.$el.find('#search_results'),
-//      model: MyApp.Models.Amazon,
-//      tmpl: this.tmplAmazon
-//    });
-    
-    this.footer = new MyApp.Views.Footer({
+
+    this.hotpepperResult = new MyApp.Views.SearchResults({
+      el: this.$el.find('#hotpepper_list'),
+      collections: new MyApp.Collections.HotpepperList(),
+      tmpl: this.tmplHotpepper,
+      service: 'hotpepper'
+    });
+ 
+		this.footer = new MyApp.Views.Footer({
       el: this.$el.find('#footer')
     });
     

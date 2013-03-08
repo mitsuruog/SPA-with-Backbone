@@ -24,6 +24,10 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 		this.$el.html(this.tmpl({
 			models: this.collections.toJSON()
 		}));
+		
+		MyApp.Mediator.trigger('select:tab', {
+			target: this.$el.attr('id')
+		});
 
 	}
 
