@@ -11,11 +11,11 @@ function program1(depth0,data) {
   var buffer = "", stack1;
   buffer += "\r\n<ul class=\"history\" data-id=\""
     + escapeExpression(((stack1 = depth0.id),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"> \r\n  <li class=\"query\">"
+    + "\">\r\n  <li class=\"query\">"
     + escapeExpression(((stack1 = depth0.query),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li> \r\n  <li class=\"service\">("
+    + "</li>\r\n  <li class=\"service\">("
     + escapeExpression(((stack1 = depth0.service),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + ")</li> \r\n  <li class=\"search-buttons\"> \r\n    <button class=\"btn btn-mini btn-danger btn-delete\"> \r\n      <i class=\"icon-remove-sign icon-white\"></i> \r\n    </button> \r\n  </li> \r\n</ul> \r\n";
+    + ")</li>\r\n  <li class=\"search-buttons\">\r\n    <button class=\"btn btn-mini btn-danger btn-delete\">\r\n      <i class=\"icon-remove-sign icon-white\"></i>\r\n    </button>\r\n  </li>\r\n</ul>\r\n";
   return buffer;
   }
 

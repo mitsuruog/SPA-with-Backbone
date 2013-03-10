@@ -3,19 +3,19 @@ module.exports = function(grunt) {
   grunt.initConfig({
 
     jshint: {
-      all: ['Gruntfile.js', 'app/js/**/*.js']
+      all: ['Gruntfile.js', 'js/**/*.js']
     },
     watch: {
       scripts: {
-        files: ['app/js/**/*.js'],
+        files: ['js/**/*.js'],
         tasks: ['jshint']
       },
       stylus: {
-        files: ['app/css/styl/*.styl'],
+        files: ['css/styl/*.styl'],
         tasks: ['stylus']
       },
       handlebars: {
-        files: ['app/hbs/**/*.hbs'],
+        files: ['hbs/**/*.hbs'],
         tasks: ['handlebars']
       }
     },
@@ -31,8 +31,8 @@ module.exports = function(grunt) {
         version: '0.1.0',
         url: 'https://github.com/mitsuruog/SPA-with-Backbone',
         options: {
-          paths: 'app/js',
-          outdir: 'app/docs'
+          paths: 'js',
+          outdir: 'docs'
         }
       }
     },
@@ -42,7 +42,7 @@ module.exports = function(grunt) {
       },
       compile: {
         files: {
-          'app/css/main.css': ['app/css/styl/*.styl']
+          'css/main.css': ['css/styl/*.styl']
         }
       }
     },
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
           }
         },
         files: {
-          "app/js/template.js": "app/hbs/*.hbs"
+          "js/template.js": "hbs/*.hbs"
         }
       }
     }
