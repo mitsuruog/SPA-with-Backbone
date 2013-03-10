@@ -1,6 +1,10 @@
 MyApp.Views.Tabs = Backbone.View.extend({
 
 	tmpl: MyApp.Templates.tabs,
+	
+	events: {
+		'click #tab>li': 'changeTab'
+	},
 
 	/**
 	 * 初期化
@@ -13,14 +17,23 @@ MyApp.Views.Tabs = Backbone.View.extend({
 
 		this.$el.html(this.tmpl());
 
-		MyApp.Mediator.on('select:tab', this.selectTab);
+		MyApp.Mediator.on('select:tab change:tab', this.selectTab);
 
 	},
+		
+	changeTab: function(e){
+		var service = this._getService(e.currentTarget);
+		MyApp.Mediator.trigger('change:tab', service);
+	},
+	
+	selectTab: function (service) {
 
-	selectTab: function (param) {
+		$('a[href^=#'+ service +']').tab('show');
 
-		$('a[href=#'+ param.target +']').tab('show');
-
+	},
+	
+	_getService: function(tab){
+		return $(tab).data('service');
 	}
 
 });

@@ -16,12 +16,12 @@ MyApp.App = Backbone.View.extend({
     this.$el.html(this.tmpl());
 
     this.history = new MyApp.Views.History({
-      el: this.$el.find('#history'),
+      el: this.$el.find('#history_list'),
       searches: new MyApp.Collections.SearchList()
     });
 
     this.searchBar = new MyApp.Views.SearchBar({
-      el: this.$el.find('#search_bar')
+      el: this.$el.find('#header')
     });
 
     this.tabs = new MyApp.Views.Tabs({

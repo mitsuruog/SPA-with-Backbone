@@ -30,13 +30,10 @@ MyApp.Views.History = Backbone.View.extend({
 		this.searches = this.options.searches;
 
 		this.searches.fetch();
-
-		//TODO 本当はrenderで統一したい。
-		this.$el.html(this.tmpl({
-			history: this.searches.toJSON()
-		}));
-
+		this.render();
+		
 		MyApp.Mediator.on('history:add', this.addHistory);
+		MyApp.Mediator.on('change:tab', this.searchCurrentHistory);
 
 		this.searches.on('add remove', this.render);
 
@@ -63,7 +60,7 @@ MyApp.Views.History = Backbone.View.extend({
 	 */
 	removeHistory: function (e) {
 
-		var id = this._getSearch(e).id;
+		var id = this._getHistory(e).id;
 		this.searches.get(id).destroy();
 
 	},
@@ -76,8 +73,8 @@ MyApp.Views.History = Backbone.View.extend({
 	 */
 	selectHistory: function (e) {
 
-		var search = this._getSearch(e);
-		MyApp.Mediator.trigger('search:history:' + search.service, search);
+		var history = this._getHistory(e);
+		MyApp.Mediator.trigger('search:history:' + history.service, history);
 
 	},
 
@@ -93,24 +90,40 @@ MyApp.Views.History = Backbone.View.extend({
 		}));
 
 	},
+	
+	searchCurrentHistory: function(service){
+		
+		var historys =[],
+				history;
+				
+		historys = this.searches.where({service: service});
+		if(historys.length){
+			
+			history = historys[0].attributes;
+			MyApp.Mediator.trigger('search:history:' + history.service, history);
+		
+		}
+		MyApp.Mediator.trigger('select:tab:', service);
+
+	},
 
 	/**
-	 * 検索オブジェクト取得
+	 * 検索履歴オブジェクト取得
 	 * @private
-	 * @method _getSearch
+	 * @method _getHistory
 	 * @type {Function}
 	 * @param {Object} e Mouseイベント
 	 */
-	_getSearch: function (e) {
+	_getHistory: function (e) {
 
-		var search = {},
-		$target = $(e.target).closest('.search');
+		var history = {},
+		$target = $(e.target).closest('.history');
 
-		search.id = $target.attr('data-id');
-		search.service = $target.find('.service').text().replace(/^\(|\)$/g, '');
-		search.query = $target.find('.query').text();
+		history.id = $target.attr('data-id');
+		history.service = $target.find('.service').text().replace(/^\(|\)$/g, '');
+		history.query = $target.find('.query').text();
 
-		return search;
+		return history;
 
 	}
 
