@@ -10,8 +10,8 @@ module.exports = function(grunt) {
         files: ['app/js/**/*.js'],
         tasks: ['jshint']
       },
-      css: {
-        files: ['app/css/styl/**/*.styl'],
+      stylus: {
+        files: ['app/css/styl/*.styl'],
         tasks: ['stylus']
       },
       handlebars: {
