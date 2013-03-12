@@ -7,7 +7,7 @@
 1. [ワイアーフレーム](#wireframe)
 1. [ページ構成](#pageStructure)
 1. [View統治ポリシー](#viewManagePolicies)
-1. [Gruntタスク作成](#grunt)
+1. [使用ライブラリ](#libs)
 1. [ワイアーフレーム作成](#makeWireframe)
 1. [イベント統治ポリシー](#eventManagePolicies)
 1. [SearchBarからHistoryへのイベント伝播](#searchToHistory)
@@ -27,15 +27,26 @@ Backbone.jsでアプリケーションを作成した際に、Viewが大きく�
 
 ## <a name='wireframe'>ワイアーフレーム</a>
 
+作成するアプリケーションは幾つかのViewで構成されます。
+
+* SearchBar：Webサービスに対してキーワード検索する。検索した場合、Historyに履歴が追加され、Resultsに結果が表示される。
+* History：検索履歴。検索履歴をクリックすることで再検索することができる。
+* Tab：Resultに表示する検索サービスを切り替えることができる。
+* Result：検索結果を表示する。
+
+ワイアーフレームのイメージは次の通りです。
+
+<img src="./img/wireframe.png">
+
 ## <a name='pageStructure'>ページ構成</a>
 
-## <a name='viewManage'>View統治ポリシー</a>
-
-## <a name='grunt'>Gruntタスク作成</a>
+## <a name='viewManagePolicies'>View統治ポリシー</a>
 
 ## <a name='makeWireframe'>ワイアーフレーム作成</a>
 
-## <a name='eventManage'>イベント統治ポリシー</a>
+## <a name='libs'>使用ライブラリ</a>
+
+## <a name='eventManagePolicies'>イベント統治ポリシー</a>
 
 ## <a name='searchToHistory'>SearchBarからHistoryへのイベント伝播</a>
 
