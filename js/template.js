@@ -1,6 +1,15 @@
 this["MyApp"] = this["MyApp"] || {};
 this["MyApp"]["Templates"] = this["MyApp"]["Templates"] || {};
 
+this["MyApp"]["Templates"]["footer"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<div class=\"copyright\">Copyright (C) 2013 <a href=\"https://twitter.com/mitsuruog\" target=\"_blank\">@mitsuruog</a> All Rights Reserved.</div>";
+  });
+
 this["MyApp"]["Templates"]["history"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
@@ -70,7 +79,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "<div class=\"navbar navbar-inverse navbar-fixed-top\">\r\n  <div class=\"navbar-inner\">\r\n    <div class=\"container\">\r\n      <a class=\"brand\" href=\"#\">SPA-with-backbone.js</a>\r\n      <div class=\"nav-collapse collapse navbar-inverse-collapse\">\r\n        <form class=\"form-search navbar-search pull-left\" action=\"\">\r\n          <div class=\"input-append\">\r\n            <input type=\"text\" name=\"query\" id=\"query\" value=\"\" class=\"search-query\" />\r\n            <button id=\"btn-search\" class=\"btn btn-inverse\">\r\n              <i class=\"icon-search icon-white\"></i>\r\n            </button>\r\n          </div>\r\n          <input type=\"radio\" name=\"service\" id=\"twitter\" value=\"twitter\" />\r\n          <label for=\"twitter\" class=\"inline\">Twitter</label>\r\n          <input type=\"radio\" name=\"service\" id=\"hotpepper\" value=\"hotpepper\" />\r\n          <label for=\"hotpepper\">Hotpepper</label>\r\n        </form>\r\n        <ul class=\"nav pull-right\">\r\n          <li>\r\n            <a href=\"#\">About me</a>\r\n          </li>\r\n          <li>\r\n            <a href=\"#\">Link</a>\r\n          </li>\r\n          <li>\r\n            <a href=\"#\">Link</a>\r\n          </li>\r\n        </ul>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>";
+  return "<div class=\"navbar navbar-inverse\">\r\n  <div class=\"navbar-inner\">\r\n   <a class=\"brand\" href=\"#\">How to build single page application with Backbone.js</a>\r\n   <div class=\"nav-collapse collapse navbar-inverse-collapse\">\r\n     <form class=\"form-search navbar-search pull-left\" action=\"\">\r\n       <div class=\"input-append\">\r\n         <input type=\"text\" name=\"query\" id=\"query\" value=\"\" class=\"search-query\" />\r\n         <button id=\"btn-search\" class=\"btn btn-inverse\">\r\n           <i class=\"icon-search icon-white\"></i>\r\n         </button>\r\n       </div>\r\n       <div id=\"search_types\">\r\n         <input type=\"radio\" name=\"service\" id=\"twitter\" value=\"twitter\" />\r\n         <label for=\"twitter\" class=\"inline\">Twitter</label>\r\n         <input type=\"radio\" name=\"service\" id=\"hotpepper\" value=\"hotpepper\" />\r\n         <label for=\"hotpepper\">Hotpepper</label>\r\n       </div>\r\n     </form>\r\n   </div>\r\n  </div>\r\n</div>";
   });
 
 this["MyApp"]["Templates"]["tabs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {

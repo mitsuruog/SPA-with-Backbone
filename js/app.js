@@ -1,52 +1,34 @@
 MyApp.App = Backbone.View.extend({
 
-  el: '#app',
+	el: '#app',
 
-  tmpl: MyApp.Templates.layout,
-  
-  tmplTwitter: MyApp.Templates.twitter,
-  
-  tmplHotpepper: MyApp.Templates.hotpepper,
-    
-  initialize: function() {
-    
-    //Mediator作成
-    _.extend(MyApp.Mediator, Backbone.Events);
-    
-    this.$el.html(this.tmpl());
+	tmpl: MyApp.Templates.layout,
 
-    this.history = new MyApp.Views.History({
-      el: this.$el.find('#history_list'),
-      searches: new MyApp.Collections.SearchList()
-    });
+	initialize: function () {
 
-    this.searchBar = new MyApp.Views.SearchBar({
-      el: this.$el.find('#header')
-    });
+		//Mediator作成
+		_.extend(MyApp.Mediator, Backbone.Events);
 
-    this.tabs = new MyApp.Views.Tabs({
-      el: this.$el.find('#search_results')
-    });
+		this.$el.html(this.tmpl());
 
-    this.twitterResult = new MyApp.Views.SearchResults({
-      el: this.$el.find('#twitter_list'),
-      collections: new MyApp.Collections.TwitterList(),
-      tmpl: this.tmplTwitter,
-      service: 'twitter'
-    });
+		this.history = new MyApp.Views.History({
+			el: this.$el.find('#history_list'),
+			searches: new MyApp.Collections.SearchList()
+		});
 
-    this.hotpepperResult = new MyApp.Views.SearchResults({
-      el: this.$el.find('#hotpepper_list'),
-      collections: new MyApp.Collections.HotpepperList(),
-      tmpl: this.tmplHotpepper,
-      service: 'hotpepper'
-    });
- 
+		this.searchBar = new MyApp.Views.SearchBar({
+			el: this.$el.find('#header')
+		});
+
+		this.tabs = new MyApp.Views.Tabs({
+			el: this.$el.find('#search_results')
+		});
+
 		this.footer = new MyApp.Views.Footer({
-      el: this.$el.find('#footer')
-    });
-    
-  }
+			el: this.$el.find('#footer')
+		});
+
+	}
 
 });
 

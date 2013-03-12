@@ -2,7 +2,7 @@
 @import "color_thema.styl"
 @charset"utf-8";
 
-$conteiner_width = 940px
+$conteiner_width = 98%
 
 body
  margin 0
@@ -27,9 +27,17 @@ ol
  margin 0 auto
  position relative
 
+#search_types
+ margin-left 10px
+ display inline
+
 .search-query
  border-radius(4px)
  
+.navbar-inverse .navbar-inner
+ background transparent
+ border none
+
 #container
  margin 0 auto
  overflow auto
@@ -53,7 +61,8 @@ ol
  
 #history_title
  thema_blue_sidebar_hover()
- height 26px
+ height: 23px;
+ padding: 4px;
  
 .history
  thema_blue_sidebar_border()
