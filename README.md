@@ -40,6 +40,34 @@ Backbone.jsでアプリケーションを作成した際に、Viewが大きく�
 
 ## <a name='pageStructure'>ページ構成</a>
 
+### ページ構成
+
+ページ構成は以下の通りです。
+
+
+### 使用ライブラリ
+
+以下のライブラリを使用しています。
+
+* Backbone.js
+* Underscore.js
+* jQuery
+* backbone.localStorage.js
+* moment.js
+* handlebars.js（任意）
+
+デザインはBootstrapです。
+
+####　補足
+
+テンプレートエンジンにhandlebars.jsを利用しています。
+こちらはUnderscore.jsのtemplateや他のテンプレートエンジンで代用することも可能です。
+
+また、CSSプリプロセッサにStylusを利用していますが、この説明ではコンパイル後のピュアなCSSをベースに話を進めていきます。（とは言っても、CSSがメインテーマではないため、ほとんど話には登場しません。）
+
+これらにはビルドプロセスが必須ですので、Gruntを使ってビルドしています。
+Gruntの設定については詳しく説明しませんが、Gruntfile.jsはこちらを参照してください。
+
 ## <a name='viewManagePolicies'>View統治ポリシー</a>
 
 ## <a name='makeWireframe'>ワイアーフレーム作成</a>
