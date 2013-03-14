@@ -1,42 +1,23 @@
 @import "nib"
-@import "color_thema.styl"
 @charset"utf-8";
 
-$conteiner_width = 98%
+$conteiner_width = 100%
 
 body
  margin 0
  padding 0
- thema_blue_color()
- thema_blue_body()
-
-ul,
-ol
- margin 0
-
+ 
 #header-wrap
  fixed(top left)
  width 100%
 
 #header-container
- height 35px
- thema_blue_special_container()
+ height 34px
 
 #header
  width $conteiner_width
  margin 0 auto
  position relative
-
-#search_types
- margin-left 10px
- display inline
-
-.search-query
- border-radius(4px)
- 
-.navbar-inverse .navbar-inner
- background transparent
- border none
 
 #container
  margin 0 auto
@@ -44,64 +25,28 @@ ol
  padding-top 35px
  padding-bottom 25px
  
-#search_results
- float right
- width 70%
- margin-top 1px
- thema_blue_results_background()
- 
-#tab-content li
- thema_blue_results_border()
-
 #history
  float left
  width 30%
- thema_blue_body()
- thema_blue_sidebar_color()
- 
-#history_title
- thema_blue_sidebar_hover()
- height: 23px;
- padding: 4px;
- 
-.history
- thema_blue_sidebar_border()
 
-.history:hover
- thema_blue_sidebar_hover()
- 
-#history_list li
- list-style-type none
- 
+#search_results
+ float right
+ width 70%
+
 #footer-wrap
  fixed(bottom left)
  width 100%
  
 #footer-container
- height 25px
- thema_blue_special_container()
+ height 24px
  
 #footer
  width $conteiner_width
  margin 0 auto
  position relative
- zurui_line()
- 
-/*----------- bootstrap-narrowバグ（？） ---------------*/
 
-.btn-mini [class^="icon-"],
-.btn-mini [class*=" icon-"] {
-  margin-top: 0;
-}
-.btn {
-  line-height: 19px;
-}
-input[type="radio"], 
-input[type="checkbox"] {
-  margin: 0;
-}
-.navbar-inverse .navbar-search .search-query:focus,
-.navbar-inverse .navbar-search .search-query.focused {
-  padding: 0 7px;
-  border: 1px solid #111111;
-}
+//------------仮
+
+header
+footer
+ border 1px solid #000

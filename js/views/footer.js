@@ -7,3 +7,4 @@ MyApp.Views.Footer = Backbone.View.extend({
   }
 
 });
+

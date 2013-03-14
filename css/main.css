@@ -1,14 +1,7 @@
-
 @charset "utf-8";
 body {
   margin: 0;
   padding: 0;
-  color: #333;
-  background: #2d335b;
-}
-ul,
-ol {
-  margin: 0;
 }
 #header-wrap {
   position: fixed;
@@ -17,31 +10,12 @@ ol {
   width: 100%;
 }
 #header-container {
-  height: 35px;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #292c3e), color-stop(1, #13152a));
-  background: -webkit-linear-gradient(top, #292c3e 0%, #13152a 100%);
-  background: -moz-linear-gradient(top, #292c3e 0%, #13152a 100%);
-  background: -o-linear-gradient(top, #292c3e 0%, #13152a 100%);
-  background: -ms-linear-gradient(top, #292c3e 0%, #13152a 100%);
-  background: linear-gradient(top, #292c3e 0%, #13152a 100%);
-  color: #bfbfbf;
+  height: 34px;
 }
 #header {
-  width: 98%;
+  width: 100%;
   margin: 0 auto;
   position: relative;
-}
-#search_types {
-  margin-left: 10px;
-  display: inline;
-}
-.search-query {
-  -webkit-border-radius: 4px;
-  border-radius: 4px;
-}
-.navbar-inverse .navbar-inner {
-  background: transparent;
-  border: none;
 }
 #container {
   margin: 0 auto;
@@ -49,38 +23,13 @@ ol {
   padding-top: 35px;
   padding-bottom: 25px;
 }
-#search_results {
-  float: right;
-  width: 70%;
-  margin-top: 1px;
-  background: #f9f9f9;
-}
-#tab-content li {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  -webkit-box-shadow: #fff 0 1px 0;
-  box-shadow: #fff 0 1px 0;
-}
 #history {
   float: left;
   width: 30%;
-  background: #2d335b;
-  color: #aaa;
 }
-#history_title {
-  background-color: #1f203b;
-  height: 23px;
-  padding: 4px;
-}
-.history {
-  border-bottom: 1px solid rgba(0,0,0,0.2);
-  -webkit-box-shadow: rgba(170,170,170,0.3) 0 1px 0 inset;
-  box-shadow: rgba(170,170,170,0.3) 0 1px 0 inset;
-}
-.history:hover {
-  background-color: #1f203b;
-}
-#history_list li {
-  list-style-type: none;
+#search_results {
+  float: right;
+  width: 70%;
 }
 #footer-wrap {
   position: fixed;
@@ -89,34 +38,14 @@ ol {
   width: 100%;
 }
 #footer-container {
-  height: 25px;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #292c3e), color-stop(1, #13152a));
-  background: -webkit-linear-gradient(top, #292c3e 0%, #13152a 100%);
-  background: -moz-linear-gradient(top, #292c3e 0%, #13152a 100%);
-  background: -o-linear-gradient(top, #292c3e 0%, #13152a 100%);
-  background: -ms-linear-gradient(top, #292c3e 0%, #13152a 100%);
-  background: linear-gradient(top, #292c3e 0%, #13152a 100%);
-  color: #bfbfbf;
+  height: 24px;
 }
 #footer {
-  width: 98%;
+  width: 100%;
   margin: 0 auto;
   position: relative;
 }
-/*----------- bootstrap-narrowバグ（？） ---------------*/
-.btn-mini [class^="icon-"],
-.btn-mini [class*=" icon-"] {
-  margin-top: 0;
-}
-.btn {
-  line-height: 19px;
-}
-input[type="radio"],
-input[type="checkbox"] {
-  margin: 0;
-}
-.navbar-inverse .navbar-search .search-query:focus,
-.navbar-inverse .navbar-search .search-query.focused {
-  padding: 0 7px;
-  border: 1px solid #111;
+header,
+footer {
+  border: 1px solid #000;
 }

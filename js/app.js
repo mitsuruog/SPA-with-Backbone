@@ -6,14 +6,10 @@ MyApp.App = Backbone.View.extend({
 
 	initialize: function () {
 
-		//Mediator作成
-		_.extend(MyApp.Mediator, Backbone.Events);
-
 		this.$el.html(this.tmpl());
 
 		this.history = new MyApp.Views.History({
-			el: this.$el.find('#history_list'),
-			searches: new MyApp.Collections.SearchList()
+			el: this.$el.find('#history_list')
 		});
 
 		this.searchBar = new MyApp.Views.SearchBar({
