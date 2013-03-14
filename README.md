@@ -57,7 +57,7 @@ Backbone.jsでアプリケーションを作成した際に、Viewが大きく�
 
 デザインはBootstrapです。
 
-####　補足
+###　補足
 
 テンプレートエンジンにhandlebars.jsを利用しています。
 こちらはUnderscore.jsのtemplateや他のテンプレートエンジンで代用することも可能です。
@@ -65,13 +65,15 @@ Backbone.jsでアプリケーションを作成した際に、Viewが大きく�
 また、CSSプリプロセッサにStylusを利用していますが、この説明ではコンパイル後のピュアなCSSをベースに話を進めていきます。（とは言っても、CSSがメインテーマではないため、ほとんど話には登場しません。）
 
 これらにはビルドプロセスが必須ですので、Gruntを使ってビルドしています。
-Gruntの設定については詳しく説明しませんが、Gruntfile.jsはこちらを参照してください。
+Gruntの設定については詳しく説明しませんが、Gruntfile.jsは[こちら](https://github.com/mitsuruog/SPA-with-Backbone/blob/master/Gruntfile.js)を参考にしてください。
 
 ## <a name='viewManagePolicies'>View統治ポリシー</a>
 
 <img src="./img/viewPolicy.png">
 
 ## <a name='makeWireframe'>ワイアーフレーム作成</a>
+
+では、早速ワイアーフレームを実装していきます。ソースコードは次の通りです。
 
 **index.html**
 ````html
@@ -125,34 +127,39 @@ var MyApp = {
 };
 ````
 **js/app.js**
+
+`App`Viewでは、アプリケーションを構築するViewを初期化して保持します。初期化する際に、各Viewが管理を担当するセレクタを渡します。
+
+最後の`new MyApp.App();`はこのアプリケーションを実行するための指示です。
+
 ````javascript
 MyApp.App = Backbone.View.extend({
 
- el: '#app',
+  el: '#app',
 
-	tmpl: MyApp.Templates.layout,
+  tmpl: MyApp.Templates.layout,
 
-	initialize: function () {
+  initialize: function () {
 
-		this.$el.html(this.tmpl());
+    this.$el.html(this.tmpl());
 
-		this.history = new MyApp.Views.History({
-			el: this.$el.find('#history_list')
-		});
+    this.history = new MyApp.Views.History({
+      el: this.$el.find('#history_list')
+    });
 
-		this.searchBar = new MyApp.Views.SearchBar({
-			el: this.$el.find('#header')
-		});
+    this.searchBar = new MyApp.Views.SearchBar({
+      el: this.$el.find('#header')
+    });
 
-		this.tabs = new MyApp.Views.Tabs({
-			el: this.$el.find('#search_results')
-		});
+    this.tabs = new MyApp.Views.Tabs({
+      el: this.$el.find('#search_results')
+    });
 
-		this.footer = new MyApp.Views.Footer({
-			el: this.$el.find('#footer')
-		});
+    this.footer = new MyApp.Views.Footer({
+      el: this.$el.find('#footer')
+    });
 
-	}
+  }
 
 });
 
@@ -185,6 +192,9 @@ MyApp.Views.History = Backbone.View.extend({
 ````
 
 **js/views/tabs.js**
+
+`Tabs`Viewでは、管理するSubViewが必要とするパラメータを渡してViewを初期化します。
+
 ````javascript
 MyApp.Views.Tabs = Backbone.View.extend({
 
@@ -210,6 +220,8 @@ MyApp.Views.Tabs = Backbone.View.extend({
 ````
 
 **js/views/search_result.js**
+
+`SearchResults`Viewでは、ManagerViewから渡されたテンプレート関数`tmpl`を実行し、管理セレクタ`el`配下にDOMを構築します。
 ````javascript
 MyApp.Views.SearchResults = Backbone.View.extend({
 
@@ -262,6 +274,8 @@ MyApp.Views.Footer = Backbone.View.extend({
 ````
 
 **hbs/*.hbs**
+
+残りのテンプレートは特に何もしていないため、さらっと流します。
 ````html
 // hbs/search_bar.hbs
 Search Bar
@@ -339,7 +353,11 @@ footer {
   border: 1px solid #000;
 }
 ````
+これらのファイルにて、このようなワイアーフレームが表示されるはずです。
+
 <img src="./img/phase-1.png">
+
+ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-1)で参照できます。
 
 ## <a name='eventManagePolicies'>イベント統治ポリシー</a>
 
