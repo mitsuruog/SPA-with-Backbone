@@ -5,9 +5,8 @@
 ## <a name='mokuji'>目次</a>
 1. [はじめに](#intro)
 1. [ワイアーフレーム](#wireframe)
-1. [ページ構成](#pageStructure)
+1. [ページ構成・使用ライブラリ](#pageStructure)
 1. [View統治ポリシー](#viewManagePolicies)
-1. [使用ライブラリ](#libs)
 1. [ワイアーフレーム作成](#makeWireframe)
 1. [イベント統治ポリシー](#eventManagePolicies)
 1. [SearchBarからHistoryへのイベント伝播](#searchToHistory)
@@ -40,7 +39,7 @@ Backbone.jsでアプリケーションを作成した際に、Viewが大きく�
 
 ## <a name='pageStructure'>ページ構成</a>
 
-### ページ構成
+### ページ構成・使用ライブラリ
 
 ページ構成は以下の通りです。
 
@@ -70,9 +69,277 @@ Gruntの設定については詳しく説明しませんが、Gruntfile.jsはこ
 
 ## <a name='viewManagePolicies'>View統治ポリシー</a>
 
+<img src="./img/viewPolicy.png">
+
 ## <a name='makeWireframe'>ワイアーフレーム作成</a>
 
-## <a name='libs'>使用ライブラリ</a>
+**index.html**
+````html
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html lang="ja" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="ja" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="ja" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="ja" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="ja" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>How to build single page application with Backbone.js</title>
+  <link href="css/main.css" rel="stylesheet" media="screen" />
+</head>
+<body>
+
+  <a href="https://github.com/mitsuruog/SPA-with-Backbone.git"><img style="position: fixed; top: 0; right: 0; border: 0;z-index: 999;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+  <!--app root  -->
+  <div id="app"></div>
+  
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <script type="text/javascript" src="assets/js/underscore-1.4.4.js"></script>
+  <script type="text/javascript" src="assets/js/backbone-0.9.10.js"></script>
+  <script type="text/javascript" src="assets/js/handlebars-1.0.0-rc.3.js"></script>
+ 
+  <script type="text/javascript" src="js/namespace.js"></script>
+  <script type="text/javascript" src="js/templates/layout.js"></script>
+  <script type="text/javascript" src="js/views/search_bar.js"></script>
+  <script type="text/javascript" src="js/views/tabs.js"></script>
+  <script type="text/javascript" src="js/views/search_results.js"></script>
+  <script type="text/javascript" src="js/views/history.js"></script>
+  <script type="text/javascript" src="js/views/footer.js"></script>
+  <script type="text/javascript" src="js/app.js"></script> 
+ 
+</body>
+</html>
+````
+**js/namespace.js**
+````javascript
+var MyApp = {
+    Models: {},
+    Collections: {},
+    Views: {},
+    App: {},
+    Templates: {}
+};
+````
+**js/app.js**
+````javascript
+MyApp.App = Backbone.View.extend({
+
+ el: '#app',
+
+	tmpl: MyApp.Templates.layout,
+
+	initialize: function () {
+
+		this.$el.html(this.tmpl());
+
+		this.history = new MyApp.Views.History({
+			el: this.$el.find('#history_list')
+		});
+
+		this.searchBar = new MyApp.Views.SearchBar({
+			el: this.$el.find('#header')
+		});
+
+		this.tabs = new MyApp.Views.Tabs({
+			el: this.$el.find('#search_results')
+		});
+
+		this.footer = new MyApp.Views.Footer({
+			el: this.$el.find('#footer')
+		});
+
+	}
+
+});
+
+new MyApp.App();
+````
+**js/views/search_bar.js**
+````javascript
+MyApp.Views.SearchBar = Backbone.View.extend({
+
+  tmpl: MyApp.Templates.search_bar,
+
+  initialize: function() {
+    this.$el.html(this.tmpl());
+  }
+
+});
+````
+
+**js/views/history.js**
+````javascript
+MyApp.Views.History = Backbone.View.extend({
+
+ tmpl: MyApp.Templates.history,
+
+	initialize: function () {
+		this.$el.html(this.tmpl());
+	}
+
+});
+````
+
+**js/views/tabs.js**
+````javascript
+MyApp.Views.Tabs = Backbone.View.extend({
+
+ tmpl: MyApp.Templates.tabs,
+
+	initialize: function () {
+		
+		this.$el.html(this.tmpl());
+
+		this.twitters = new MyApp.Views.SearchResults({
+			el: this.$el.find('#twitter_list'),
+			tmpl: MyApp.Templates.twitter
+		});
+
+		this.hotppepers = new MyApp.Views.SearchResults({
+			el: this.$el.find('#hotpepper_list'),
+			tmpl: MyApp.Templates.hotpepper
+		});
+
+	}
+
+});
+````
+
+**js/views/search_result.js**
+````javascript
+MyApp.Views.SearchResults = Backbone.View.extend({
+
+ initialize: function () {
+		this.$el.html(this.options.tmpl());
+	}
+
+});
+````
+
+**js/views/footer.js**
+````javascript
+MyApp.Views.Footer = Backbone.View.extend({
+
+  tmpl: MyApp.Templates.footer,
+
+  initialize: function() {
+    this.$el.html(this.tmpl());
+  }
+
+});
+````
+
+**hbs/layput.hbs**
+````html
+<header id="header-wrap">
+ <div id="header-container">
+		<div id="header">
+		</div>
+	</div>
+</header>
+
+<div id="container">
+
+	<div id="history">
+		<div id="history_title"></div>
+		<div id="history_list"></div>
+	</div>
+
+	<div id="search_results">
+	</div>
+
+</div>
+
+<footer id="footer-wrap">
+	<div id="footer-container">
+		<div id="footer"></div>
+	</div>
+</footer>
+````
+
+**hbs/*.hbs**
+````html
+// hbs/search_bar.hbs
+Search Bar
+
+// hbs/history.hbs
+History
+
+// hbs/tabs.hbs
+Tab
+<div id="twitter_list"></div>
+<div id="hotpepper_list"></div>
+
+// hbs/twitter.hbs
+Twitter
+
+// hbs/hotppeper.hbs
+Hotppeper
+
+// hbs/footer.hbs
+Footer
+
+````
+
+**css/main.css**
+````css
+@charset "utf-8";
+body {
+  margin: 0;
+  padding: 0;
+}
+#header-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+#header-container {
+  height: 34px;
+}
+#header {
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+#container {
+  margin: 0 auto;
+  overflow: auto;
+  padding-top: 35px;
+  padding-bottom: 25px;
+}
+#history {
+  float: left;
+  width: 30%;
+}
+#search_results {
+  float: right;
+  width: 70%;
+}
+#footer-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+#footer-container {
+  height: 24px;
+}
+#footer {
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+header,
+footer {
+  border: 1px solid #000;
+}
+````
+<img src="./img/phase-1.png">
 
 ## <a name='eventManagePolicies'>イベント統治ポリシー</a>
 
