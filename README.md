@@ -69,6 +69,16 @@ Gruntの設定については詳しく説明しませんが、Gruntfile.jsは[�
 
 ## <a name='viewManagePolicies'>View統治ポリシー</a>
 
+Viewは「ManagerView」と「SubView」の2つに分類し、アプリケーションのトップレベルにあるManagerViewを特別に「PresidentView」と呼びます。
+ManagerViewはSubViewのオブジェクトを保持し、管理するSubViewを外側から制御する責務（Viewの切り替えなど）のみを持ちます。
+それに対して、SubViewは自身が管理するCollectionやModelを持ち、SubView自身を内側から制御する責務（レンダリングなど）や、CollectionやModelとの同期を行う責務を持ちます。
+
+PresidentViewはアプリケーションが初期化される際に初期化され、
+配下のManagerViewやSubViewのオブジェクトを生成し、アプリケーションを構築します。
+また、後で言及するグローバルレベルのイベントを統括します。
+
+本アプリケーションでの、Viewの構成は次のようになります。
+
 <img src="./img/viewPolicy.png">
 
 ## <a name='makeWireframe'>ワイアーフレーム作成</a>
@@ -119,11 +129,11 @@ Gruntの設定については詳しく説明しませんが、Gruntfile.jsは[�
 **js/namespace.js**
 ````javascript
 var MyApp = {
-    Models: {},
-    Collections: {},
-    Views: {},
-    App: {},
-    Templates: {}
+  Models: {},
+  Collections: {},
+  Vews: {},
+  App: {},
+  Templates: {}
 };
 ````
 **js/app.js**
@@ -353,7 +363,7 @@ footer {
   border: 1px solid #000;
 }
 ````
-これらのファイルにて、このようなワイアーフレームが表示されるはずです。
+これらをブラウザで表示させると、次のようなワイアーフレームが表示されるはずです。
 
 <img src="./img/phase-1.png">
 
@@ -384,7 +394,7 @@ MyApp.App = Backbone.View.extend({
       searches: new MyApp.Collections.SearchHistoryList()
     });
 
-//some...
+    //some...
 
   }
 
@@ -553,13 +563,13 @@ ul,
 ol {
   margin: 0;
 }
- #header-wrap  {
+#header-wrap  {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
 }
- #header-container  {
+#header-container  {
   height: 34px;
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #292c3e), color-stop(1, #13152a));
   background: -webkit-linear-gradient(top, #292c3e 0%, #13152a 100%);
@@ -569,12 +579,12 @@ ol {
   background: linear-gradient(top, #292c3e 0%, #13152a 100%);
   color:  #bfbfbf ;
 }
- #header  {
+#header  {
   width: 100%;
   margin: 0 auto;
   position: relative;
 }
- #search_types  {
+#search_types  {
   margin-left: 10px;
   display: inline;
 }
@@ -586,19 +596,19 @@ ol {
   background: transparent;
   border: none;
 }
- #container  {
+#container  {
   margin: 0 auto;
   overflow: auto;
   padding-top: 35px;
   padding-bottom: 25px;
 }
- #history  {
+#history  {
   float: left;
   width: 30%;
   background: #2d335b;
   color:  #aaa ;
 }
- #history_title  {
+#history_title  {
   background-color: #1f203b;
   height: 23px;
   padding: 4px;
@@ -629,25 +639,25 @@ ol {
 .history:after {
   clear: both;
 }
- #history_list  li {
+#history_list  li {
   list-style-type: none;
   float: left;
 }
 .history_buttons {
   float: right !important;
 }
- #search_results  {
+#search_results  {
   float: right;
   width: 70%;
   background:  #f9f9f9 ;
 }
- #footer-wrap  {
+#footer-wrap  {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
 }
- #footer-container  {
+#footer-container  {
   height: 24px;
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #292c3e), color-stop(1, #13152a));
   background: -webkit-linear-gradient(top, #292c3e 0%, #13152a 100%);
@@ -657,12 +667,17 @@ ol {
   background: linear-gradient(top, #292c3e 0%, #13152a 100%);
   color:  #bfbfbf ;
 }
- #footer  {
+#footer  {
   width: 100%;
   margin: 0 auto;
   position: relative;
 }
 ````
+これらをブラウザで表示させると、次のような画面が表示されるはずです。
+
+<img src="./img/phase-2.png">
+
+ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-1)で参照できます。
 
 ## <a name='historyToResult'>HistoryからSearchResultへのイベント伝播</a>
 
