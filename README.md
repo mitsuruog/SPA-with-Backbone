@@ -77,6 +77,13 @@ PresidentViewはアプリケーションが初期化される際に初期化さ�
 配下のManagerViewやSubViewのオブジェクトを生成し、アプリケーションを構築します。
 また、後で言及するグローバルレベルのイベントを統括します。
 
+| View | 主な責務 | 備考 |
+|:-----------|:------------|:------------|
+| PresidentView| アプリケーションのトップレベル。初期化時に他のViewの初期化||
+| ManagerView| SubViewの管理と外側のみの制御||
+| SubView| CollectionやModelとの同期。SubView内部のみの制御||
+
+
 本アプリケーションでの、Viewの構成は次のようになります。
 
 <img src="./img/viewPolicy.png">
