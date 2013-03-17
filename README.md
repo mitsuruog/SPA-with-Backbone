@@ -130,29 +130,29 @@ MyApp.App = Backbone.View.extend({
 
  el: '#app',
 
-	tmpl: MyApp.Templates.layout,
+  tmpl: MyApp.Templates.layout,
 
-	initialize: function () {
+  initialize: function () {
 
-		this.$el.html(this.tmpl());
+    this.$el.html(this.tmpl());
 
-		this.history = new MyApp.Views.History({
-			el: this.$el.find('#history_list')
-		});
+    this.history = new MyApp.Views.History({
+      el: this.$el.find('#history_list')
+    });
 
-		this.searchBar = new MyApp.Views.SearchBar({
-			el: this.$el.find('#header')
-		});
+    this.searchBar = new MyApp.Views.SearchBar({
+      el: this.$el.find('#header')
+    });
 
-		this.tabs = new MyApp.Views.Tabs({
-			el: this.$el.find('#search_results')
-		});
+    this.tabs = new MyApp.Views.Tabs({
+      el: this.$el.find('#search_results')
+    });
 
-		this.footer = new MyApp.Views.Footer({
-			el: this.$el.find('#footer')
-		});
+    this.footer = new MyApp.Views.Footer({
+      el: this.$el.find('#footer')
+    });
 
-	}
+  }
 
 });
 
@@ -177,9 +177,9 @@ MyApp.Views.History = Backbone.View.extend({
 
  tmpl: MyApp.Templates.history,
 
-	initialize: function () {
-		this.$el.html(this.tmpl());
-	}
+  initialize: function () {
+    this.$el.html(this.tmpl());
+  }
 
 });
 ````
@@ -190,21 +190,21 @@ MyApp.Views.Tabs = Backbone.View.extend({
 
  tmpl: MyApp.Templates.tabs,
 
-	initialize: function () {
-		
-		this.$el.html(this.tmpl());
+  initialize: function () {
+    
+    this.$el.html(this.tmpl());
 
-		this.twitters = new MyApp.Views.SearchResults({
-			el: this.$el.find('#twitter_list'),
-			tmpl: MyApp.Templates.twitter
-		});
+    this.twitters = new MyApp.Views.SearchResults({
+      el: this.$el.find('#twitter_list'),
+      tmpl: MyApp.Templates.twitter
+    });
 
-		this.hotppepers = new MyApp.Views.SearchResults({
-			el: this.$el.find('#hotpepper_list'),
-			tmpl: MyApp.Templates.hotpepper
-		});
+    this.hotppepers = new MyApp.Views.SearchResults({
+      el: this.$el.find('#hotpepper_list'),
+      tmpl: MyApp.Templates.hotpepper
+    });
 
-	}
+  }
 
 });
 ````
@@ -214,8 +214,8 @@ MyApp.Views.Tabs = Backbone.View.extend({
 MyApp.Views.SearchResults = Backbone.View.extend({
 
  initialize: function () {
-		this.$el.html(this.options.tmpl());
-	}
+    this.$el.html(this.options.tmpl());
+  }
 
 });
 ````
@@ -237,27 +237,27 @@ MyApp.Views.Footer = Backbone.View.extend({
 ````html
 <header id="header-wrap">
  <div id="header-container">
-		<div id="header">
-		</div>
-	</div>
+    <div id="header">
+    </div>
+  </div>
 </header>
 
 <div id="container">
 
-	<div id="history">
-		<div id="history_title"></div>
-		<div id="history_list"></div>
-	</div>
+  <div id="history">
+    <div id="history_title"></div>
+    <div id="history_list"></div>
+  </div>
 
-	<div id="search_results">
-	</div>
+  <div id="search_results">
+  </div>
 
 </div>
 
 <footer id="footer-wrap">
-	<div id="footer-container">
-		<div id="footer"></div>
-	</div>
+  <div id="footer-container">
+    <div id="footer"></div>
+  </div>
 </footer>
 ````
 
@@ -344,6 +344,307 @@ footer {
 ## <a name='eventManagePolicies'>イベント統治ポリシー</a>
 
 ## <a name='searchToHistory'>SearchBarからHistoryへのイベント伝播</a>
+
+**js/app.js**
+````javascript
+MyApp.App = Backbone.View.extend({
+
+  el: '#app',
+
+  tmpl: MyApp.Templates.layout,
+
+  initialize: function () {
+
+    //Mediator作成
+    MyApp.mediator = {};
+    _.extend(MyApp.mediator, Backbone.Events);
+
+    this.$el.html(this.tmpl());
+
+    this.history = new MyApp.Views.History({
+      el: this.$el.find('#history_list'),
+      searches: new MyApp.Collections.SearchHistoryList()
+    });
+
+//some...
+
+  }
+
+});
+
+new MyApp.App();
+````
+
+**js/views/search_bar.js**
+````javascript
+MyApp.Views.SearchBar = Backbone.View.extend({
+
+  tmpl: MyApp.Templates.search_bar,
+
+  events: {
+    'click #btn-search': 'search'
+  },
+  
+  //some...
+  
+  search: function(e){
+    
+    var $checked = this.$el.find('input[type=radio]:checked'),
+      query = $('#query').val(),
+      service = $checked.val(),
+      search = {};
+    
+    e.preventDefault();
+    
+    search.query = query;
+    search.service = service;
+    
+    //「search:サービス名」と「history:add」イベントを発火する
+    MyApp.mediator.trigger('search:' + service + ' history:add', search);
+    
+  }
+
+});
+````
+
+**js/views/search_bar.js**
+````javascript
+MyApp.Views.History = Backbone.View.extend({
+
+  tmpl: MyApp.Templates.history,
+
+  //Localレベルイベントの定義
+  events: {
+    'click .btn_delete': 'removeHistory'
+  },
+
+  initialize: function () {
+
+    _.bindAll(this);
+
+    this.searches = this.options.searches;
+
+    this.searches.fetch();
+    this.render();
+
+    //Globalレベルイベントをバインド
+    MyApp.mediator.on('history:add', this.addHistory);
+
+    //Localレベルイベントをバインド
+    this.searches.on('add remove', this.render);
+
+  },
+
+  addHistory: function (search) {
+
+    search.id = +new Date();
+    this.searches.create(search);
+
+  },
+
+  removeHistory: function (e) {
+
+    var id = this._getHistory(e).id;
+    this.searches.get(id).destroy();
+
+  },
+
+  render: function () {
+
+    this.$el.html(this.tmpl({
+      history: this.searches.toJSON()
+    }));
+
+  },
+
+  _getHistory: function (e) {
+
+    var history = {},
+    $target = $(e.target).closest('.history');
+
+    history.id = $target.attr('data-id');
+    history.service = $target.find('.service').text().replace(/^\(|\)$/g, '');
+    history.query = $target.find('.query').text();
+
+    return history;
+
+  }
+
+});
+````
+
+**js/collections/search_history_list.js**
+````javascript
+MyApp.Collections.SearchHistoryList = Backbone.Collection.extend({
+  
+  localStorage: new Backbone.LocalStorage('mitsuruog_SPA_searchHistory')
+  
+});
+````
+
+**hbs/search_bar.hbs**
+````html
+<div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+   <a class="brand" href="#" title="How to build single page application with Backbone.js">SPA-with-Backbone.js</a>
+   <div class="nav-collapse collapse navbar-inverse-collapse">
+     <form class="form-search navbar-search pull-left" action="">
+       <div class="input-append">
+         <input type="text" name="query" id="query" value="" class="search-query" />
+         <button id="btn-search" class="btn btn-inverse">
+           <i class="icon-search icon-white"></i>
+         </button>
+       </div>
+       <div id="search_types">
+         <input type="radio" name="service" id="twitter" value="twitter" />
+         <label for="twitter" class="inline">Twitter</label>
+         <input type="radio" name="service" id="hotpepper" value="hotpepper" />
+         <label for="hotpepper">Hotpepper</label>
+       </div>
+     </form>
+   </div>
+  </div>
+</div>
+````
+
+**hbs/history.hbs**
+````html
+{{#each history}}
+<ul class="history" data-id="{{this.id}}">
+  <li class="history_contents">
+    <span class="query">{{this.query}}</span>
+    <span class="service">({{this.service}})</span>
+  </li>
+  <li class="history_buttons">
+    <i class="icon-remove-sign icon-white btn_delete"></i>
+  </li>
+</ul>
+{{/each}}
+````
+
+**css/main.css**
+````css
+ @charset  "utf-8";
+body {
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background: #2d335b;
+}
+ul,
+ol {
+  margin: 0;
+}
+ #header-wrap  {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+ #header-container  {
+  height: 34px;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #292c3e), color-stop(1, #13152a));
+  background: -webkit-linear-gradient(top, #292c3e 0%, #13152a 100%);
+  background: -moz-linear-gradient(top, #292c3e 0%, #13152a 100%);
+  background: -o-linear-gradient(top, #292c3e 0%, #13152a 100%);
+  background: -ms-linear-gradient(top, #292c3e 0%, #13152a 100%);
+  background: linear-gradient(top, #292c3e 0%, #13152a 100%);
+  color:  #bfbfbf ;
+}
+ #header  {
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+ #search_types  {
+  margin-left: 10px;
+  display: inline;
+}
+.search-query {
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+.navbar-inverse .navbar-inner {
+  background: transparent;
+  border: none;
+}
+ #container  {
+  margin: 0 auto;
+  overflow: auto;
+  padding-top: 35px;
+  padding-bottom: 25px;
+}
+ #history  {
+  float: left;
+  width: 30%;
+  background: #2d335b;
+  color:  #aaa ;
+}
+ #history_title  {
+  background-color: #1f203b;
+  height: 23px;
+  padding: 4px;
+}
+.history {
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  -webkit-box-shadow: rgba(170,170,170,0.3) 0 1px 0 inset;
+  box-shadow: rgba(170,170,170,0.3) 0 1px 0 inset;
+  padding: 9px 4px;
+}
+.history:hover {
+  background-color: #1f203b;
+}
+.history .btn_delete {
+  visibility: hidden;
+}
+.history:hover .btn_delete {
+  visibility: visible;
+}
+.history {
+  zoom: 1;
+}
+.history:before,
+.history:after {
+  content: "";
+  display: table;
+}
+.history:after {
+  clear: both;
+}
+ #history_list  li {
+  list-style-type: none;
+  float: left;
+}
+.history_buttons {
+  float: right !important;
+}
+ #search_results  {
+  float: right;
+  width: 70%;
+  background:  #f9f9f9 ;
+}
+ #footer-wrap  {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+ #footer-container  {
+  height: 24px;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #292c3e), color-stop(1, #13152a));
+  background: -webkit-linear-gradient(top, #292c3e 0%, #13152a 100%);
+  background: -moz-linear-gradient(top, #292c3e 0%, #13152a 100%);
+  background: -o-linear-gradient(top, #292c3e 0%, #13152a 100%);
+  background: -ms-linear-gradient(top, #292c3e 0%, #13152a 100%);
+  background: linear-gradient(top, #292c3e 0%, #13152a 100%);
+  color:  #bfbfbf ;
+}
+ #footer  {
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+````
 
 ## <a name='historyToResult'>HistoryからSearchResultへのイベント伝播</a>
 
