@@ -1,4 +1,5 @@
 @import "nib"
+@import "color_thema.styl"
 @charset"utf-8";
 
 $conteiner_width = 100%
@@ -6,18 +7,36 @@ $conteiner_width = 100%
 body
  margin 0
  padding 0
+ thema_blue_color()
+ thema_blue_body()
  
+ul,
+ol
+ margin 0
+
 #header-wrap
  fixed(top left)
  width 100%
 
 #header-container
  height 34px
+ thema_blue_special_container()
 
 #header
  width $conteiner_width
  margin 0 auto
  position relative
+
+#search_types
+ margin-left 10px
+ display inline
+
+.search-query
+ border-radius(4px)
+ 
+.navbar-inverse .navbar-inner
+ background transparent
+ border none
 
 #container
  margin 0 auto
@@ -28,10 +47,46 @@ body
 #history
  float left
  width 30%
+ thema_blue_body()
+ thema_blue_sidebar_color()
+ 
+#history_title
+ thema_blue_sidebar_hover()
+ height: 23px;
+ padding: 4px;
+ 
+.history
+ thema_blue_sidebar_border()
+ padding 9px 4px
+
+.history:hover
+ thema_blue_sidebar_hover()
+
+.history .btn_delete
+ visibility hidden
+
+.history:hover .btn_delete
+ visibility visible
+
+.history
+  clearfix()
+ 
+#history_list li
+ list-style-type none
+ float left
+
+.history_buttons
+ float right !important
+
+/* .btn_delete
+position absolute
+ margin-top 5px
+ margin-left 5px*/
 
 #search_results
  float right
  width 70%
+ thema_blue_results_background()
 
 #footer-wrap
  fixed(bottom left)
@@ -39,14 +94,9 @@ body
  
 #footer-container
  height 24px
+ thema_blue_special_container()
  
 #footer
  width $conteiner_width
  margin 0 auto
  position relative
-
-//------------仮
-
-header
-footer
- border 1px solid #000

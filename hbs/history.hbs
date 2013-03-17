@@ -1,1 +1,11 @@
-History
+{{#each history}}
+<ul class="history" data-id="{{this.id}}">
+  <li class="history_contents">
+    <span class="query">{{this.query}}</span>
+    <span class="service">({{this.service}})</span>
+  </li>
+  <li class="history_buttons">
+    <i class="icon-remove-sign icon-white btn_delete"></i>
+  </li>
+</ul>
+{{/each}}
