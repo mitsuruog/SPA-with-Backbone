@@ -3,7 +3,7 @@ MyApp.Views.SearchBar = Backbone.View.extend({
 	tmpl: MyApp.Templates.search_bar,
 
 	events: {
-		'click #btn-search': 'search'
+		'click #btn_search': 'search'
 	},
 
 	initialize: function () {
