@@ -7,11 +7,11 @@
 1. [ワイアーフレーム](#wireframe)
 1. [ページ構成・使用ライブラリ](#pageStructure)
 1. [View統治ポリシー](#viewManagePolicies)
-1. [ワイアーフレーム作成](#makeWireframe)
 1. [イベント統治ポリシー](#eventManagePolicies)
+1. [ワイアーフレーム作成](#makeWireframe)
 1. [SearchBarからHistoryへのイベント伝播](#searchToHistory)
-1. [HistoryからSearchResultへのイベント伝播](#historyToResult)
 1. [SearchBarからSearchResultへのイベント伝播](#searchToResult)
+1. [HistoryからSearchResultへのイベント伝播](#historyToResult)
 1. [Tabから他のViewへのイベント伝播](#tabToOther)
 1. [仕上げ](#finish)
 1. [まとめ](#summary)
@@ -87,6 +87,8 @@ PresidentViewはアプリケーションが初期化される際に初期化さ�
 本アプリケーションでの、Viewの構成は次のようになります。
 
 <img src="./img/viewPolicy.png">
+
+## <a name='eventManagePolicies'>イベント統治ポリシー</a>
 
 ## <a name='makeWireframe'>ワイアーフレーム作成</a>
 
@@ -376,7 +378,7 @@ footer {
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-1)で参照できます。
 
-## <a name='eventManagePolicies'>イベント統治ポリシー</a>
+
 
 ## <a name='searchToHistory'>SearchBarからHistoryへのイベント伝播</a>
 
@@ -384,26 +386,26 @@ footer {
 ````javascript
 MyApp.App = Backbone.View.extend({
 
-  el: '#app',
+ el: '#app',
 
-  tmpl: MyApp.Templates.layout,
+	tmpl: MyApp.Templates.layout,
 
-  initialize: function () {
+	initialize: function () {
 
-    //Mediator作成
-    MyApp.mediator = {};
-    _.extend(MyApp.mediator, Backbone.Events);
+		//Mediator作成
+		MyApp.mediator = {};
+		_.extend(MyApp.mediator, Backbone.Events);
+		
+		this.$el.html(this.tmpl());
 
-    this.$el.html(this.tmpl());
+		this.history = new MyApp.Views.History({
+			el: this.$el.find('#history_list'),
+			searches: new MyApp.Collections.SearchHistoryList()
+		});
 
-    this.history = new MyApp.Views.History({
-      el: this.$el.find('#history_list'),
-      searches: new MyApp.Collections.SearchHistoryList()
-    });
+  // some...
 
-    //some...
-
-  }
+	}
 
 });
 
@@ -414,96 +416,97 @@ new MyApp.App();
 ````javascript
 MyApp.Views.SearchBar = Backbone.View.extend({
 
-  tmpl: MyApp.Templates.search_bar,
+ tmpl: MyApp.Templates.search_bar,
 
-  events: {
-    'click #btn-search': 'search'
-  },
-  
-  //some...
-  
-  search: function(e){
-    
-    var $checked = this.$el.find('input[type=radio]:checked'),
-      query = $('#query').val(),
-      service = $checked.val(),
-      search = {};
-    
-    e.preventDefault();
-    
-    search.query = query;
-    search.service = service;
-    
-    //「search:サービス名」と「history:add」イベントを発火する
-    MyApp.mediator.trigger('search:' + service + ' history:add', search);
-    
-  }
+ //Localレベルイベントの定義
+	events: {
+		'click #btn_search': 'search'
+	},
+
+ // some...
+
+	search: function (e) {
+
+		var $checked = this.$el.find('input[type=radio]:checked'),
+			query = $('#query').val(),
+			service = $checked.val(),
+			search = {};
+
+		e.preventDefault();
+
+		search.query = query;
+		search.service = service;
+
+  //「search」イベントを発火する
+  MyApp.mediator.trigger('search', search);
+
+	}
 
 });
 ````
 
-**js/views/search_bar.js**
+**js/views/History.js**
 ````javascript
 MyApp.Views.History = Backbone.View.extend({
 
-  tmpl: MyApp.Templates.history,
+ tmpl: MyApp.Templates.history,
 
-  //Localレベルイベントの定義
-  events: {
-    'click .btn_delete': 'removeHistory'
-  },
+ //Localレベルイベントの定義
+	events: {
+		'click .btn_delete': 'removeHistory'
+	},
 
-  initialize: function () {
+	initialize: function () {
 
-    _.bindAll(this);
+		_.bindAll(this);
 
-    this.searches = this.options.searches;
+		this.searches = this.options.searches;
 
-    this.searches.fetch();
-    this.render();
+		this.searches.fetch();
+		this.render();
+  
+  //Globalレベルイベントをバインド
+  MyApp.mediator.on('search', this.addHistory);
 
-    //Globalレベルイベントをバインド
-    MyApp.mediator.on('history:add', this.addHistory);
+  //Localレベルイベントをバインド
+		this.searches.on('add remove', this.render);
 
-    //Localレベルイベントをバインド
-    this.searches.on('add remove', this.render);
+	},
 
-  },
+	addHistory: function (search) {
 
-  addHistory: function (search) {
+		search.id = +new Date();
+		this.searches.create(search);
 
-    search.id = +new Date();
-    this.searches.create(search);
+	},
 
-  },
+	removeHistory: function (e) {
 
-  removeHistory: function (e) {
+		var id = this._getHistory(e).id;
+		this.searches.get(id).destroy();
 
-    var id = this._getHistory(e).id;
-    this.searches.get(id).destroy();
+	},
 
-  },
+	render: function () {
 
-  render: function () {
+		this.$el.html(this.tmpl({
+			history: this.searches.toJSON()
+		}));
 
-    this.$el.html(this.tmpl({
-      history: this.searches.toJSON()
-    }));
+	},
+	
+	_getHistory: function (e) {
 
-  },
+		var history = {},
+		$target = $(e.target).closest('.history');
 
-  _getHistory: function (e) {
+		history.id = $target.attr('data-id');
+		history.service = $target.find('.service').text().replace(/^\(|\)$/g, '');
+		history.query = $target.find('.query').text();
 
-    var history = {},
-    $target = $(e.target).closest('.history');
+		return history;
 
-    history.id = $target.attr('data-id');
-    history.service = $target.find('.service').text().replace(/^\(|\)$/g, '');
-    history.query = $target.find('.query').text();
-
-    return history;
-
-  }
+	}
 
 });
 ````
@@ -512,7 +515,7 @@ MyApp.Views.History = Backbone.View.extend({
 ````javascript
 MyApp.Collections.SearchHistoryList = Backbone.Collection.extend({
   
-  localStorage: new Backbone.LocalStorage('mitsuruog_SPA_searchHistory')
+ localStorage: new Backbone.LocalStorage('mitsuruog_SPA_searchHistory')
   
 });
 ````
@@ -526,7 +529,7 @@ MyApp.Collections.SearchHistoryList = Backbone.Collection.extend({
      <form class="form-search navbar-search pull-left" action="">
        <div class="input-append">
          <input type="text" name="query" id="query" value="" class="search-query" />
-         <button id="btn-search" class="btn btn-inverse">
+         <button id="btn_search" class="btn btn-inverse">
            <i class="icon-search icon-white"></i>
          </button>
        </div>
@@ -686,9 +689,194 @@ ol {
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-1)で参照できます。
 
+## <a name='searchToResult'>SearchBarからSearchResultへのイベント伝播</a>
+
+**js/views/search_bar.js**
+````javascript
+MyApp.Views.SearchBar = Backbone.View.extend({
+
+ // some...
+
+	search: function (e) {
+
+		// some...
+
+  //「search」「search:イベント名」イベントを発火する
+		MyApp.mediator.trigger('search', search);
+		MyApp.mediator.trigger('search:' + service, search);
+
+	}
+
+});
+````
+
+**js/views/tabs.js**
+````javascript
+MyApp.Views.Tabs = Backbone.View.extend({
+
+ tmpl: MyApp.Templates.tabs,
+
+	initialize: function () {
+		
+		this.$el.html(this.tmpl());
+
+		this.twitters = new MyApp.Views.SearchResults({
+			
+			el: this.$el.find('#twitter_list'),
+			tmpl: MyApp.Templates.twitter,
+			collections: new MyApp.Collections.TwitterList(),
+			service: 'twitter'
+			
+		});
+
+		this.hotppepers = new MyApp.Views.SearchResults({
+			
+			el: this.$el.find('#hotpepper_list'),
+			tmpl: MyApp.Templates.hotpepper,
+			collections: new MyApp.Collections.HotpepperList(),
+			service: 'hotpepper'
+			
+		});
+		
+  //Globalレベルイベントをバインド
+		MyApp.mediator.on('search', this.selectTab);
+
+	},
+	
+	selectTab: function(search){
+	
+		$('a[href^=#' + search.service + ']').tab('show');
+	
+	}
+
+});
+````
+
+**js/views/search_results.js**
+````javascript
+MyApp.Views.SearchResults = Backbone.View.extend({
+
+ initialize: function () {
+		
+		_.bindAll(this);
+
+		this.collections = this.options.collections;
+		this.tmpl = this.options.tmpl;
+		this.service = this.options.service;
+
+  //Globalレベルイベントをバインド
+		MyApp.mediator.on('search:' + this.service, this.search);
+
+  //Localレベルイベントをバインド
+		this.collections.on('reset', this.render);
+		
+	},
+	
+	
+search: function(search){
+
+	this.collections.search(search);
+
+},
+
+render: function () {
+
+		this.$el.html(this.tmpl({
+			models: this.collections.toJSON()
+		}));
+
+	}
+	
+});
+
+````
+
+
+**js/collections/twitter_list.js**
+````javascript
+MyApp.Collections.TwitterList = Backbone.Collection.extend({
+
+ url: 'http://search.twitter.com/search.json',
+
+	model: MyApp.Models.Twitter,
+
+	search: function (param) {
+
+		this.fetch({
+			data: {
+				q: encodeURIComponent(param.query)
+			},
+			dataType: 'jsonp'
+		});
+
+	},
+
+	parse: function (response, options) {
+
+		this.response = response;
+
+		return response.results;
+
+	}
+
+});
+````
+
+**js/models/twitter.js**
+````javascript
+MyApp.Models.Twitter = Backbone.Model.extend({
+
+ set: function (attrs, options) {
+
+		if (attrs.text) {
+			attrs.text_linked = twttr.txt.autoLink(attrs.text);
+		}
+		if (attrs.created_at) {
+			attrs.created_at = moment(attrs.created_at).format('YYYY/MM/DD HH:MM:SS');
+		}
+
+		return Backbone.Model.prototype.set.call(this, attrs, options);
+	}
+
+});
+````
+
+**hbs/tabs.hbs**
+````html
+<ul id="tab" class="nav nav-tabs">
+  <li class="active" data-toggle="tab" data-service="twitter">
+    <a href="#twitter_list">Twitter</a>
+  </li>
+  <li class="" data-toggle="tab" data-service="hotpepper">
+    <a href="#hotpepper_list">Hotpepper</a>
+  </li>
+</ul>
+<div id="tab-content" class="tab-content">
+  <div class="tab-pane active" id="twitter_list" data-service="twitter"></div>
+  <div class="tab-pane" id="hotpepper_list" data-service="hotpepper"></div>
+</div>
+````
+
+**hbs/tabs.twitter.hbs**
+````html
+<ul id="twitter_list">
+  {{#each models}}
+    <li>
+      <span class="img">
+        <img src="{{this.profile_image_url}}">
+      </span>
+      <span class="author">
+        <a href="https://twitter.com/{{this.from_user}}" target="_blank">@{{this.from_user}}</a></span>
+        <span class="body">{{{this.text_linked}}}</span>
+        <span class="time"><a href="https://twitter.com/{{this.from_user}}/status/{{this.id_str}}" target="_blank">{{this.created_at}}</a>
+      </span>
+    </li>
+    {{/each}}
+</ul>
+````
+
 ## <a name='historyToResult'>HistoryからSearchResultへのイベント伝播</a>
 
-## <a name='searchToResult'>SearchBarからSearchResultへのイベント伝播</a>
 
 ## <a name='tabToOther'>Tabから他のViewへのイベント伝播</a>
 
