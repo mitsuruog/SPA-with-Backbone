@@ -15,7 +15,7 @@ MyApp.Views.History = Backbone.View.extend({
 		this.searches.fetch();
 		this.render();
 
-		MyApp.mediator.on('history:add', this.addHistory);
+		MyApp.mediator.on('search', this.addHistory);
 
 		this.searches.on('add remove', this.render);
 
