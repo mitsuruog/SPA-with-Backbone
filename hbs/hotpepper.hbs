@@ -1,1 +1,15 @@
-Hotpepper
+<ul id="hotpepper_list">
+  {{#each models}}
+    <li>
+      <span class="img">
+        <img src="{{this.logo_image}}">
+      </span>
+      <span class="shop">
+        <a href="{{this.urls.pc}}" target="_blank">{{this.name}}</a>
+        <span class="catch">{{this.catch}}</span>
+        <span class="access">{{this.access}}</span>
+        <span class="address">{{this.address}}</span>
+      </span>
+    </li>
+    {{/each}}
+</ul>

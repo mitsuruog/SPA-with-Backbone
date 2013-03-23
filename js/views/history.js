@@ -34,7 +34,7 @@ MyApp.Views.History = Backbone.View.extend({
 		this.searches.get(id).destroy();
 
 	},
-
+	
 	render: function () {
 
 		this.$el.html(this.tmpl({

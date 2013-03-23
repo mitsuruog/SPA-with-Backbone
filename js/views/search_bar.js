@@ -26,6 +26,7 @@ MyApp.Views.SearchBar = Backbone.View.extend({
 		search.service = service;
 
 		MyApp.mediator.trigger('search', search);
+		MyApp.mediator.trigger('search:' + service, search);
 
 	}
 

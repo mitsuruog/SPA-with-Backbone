@@ -36,10 +36,32 @@ function program1(depth0,data) {
 this["MyApp"]["Templates"]["hotpepper"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\r\n    <li>\r\n      <span class=\"img\">\r\n        <img src=\""
+    + escapeExpression(((stack1 = depth0.logo_image),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\r\n      </span>\r\n      <span class=\"shop\">\r\n        <a href=\""
+    + escapeExpression(((stack1 = ((stack1 = depth0.urls),stack1 == null || stack1 === false ? stack1 : stack1.pc)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">"
+    + escapeExpression(((stack1 = depth0.name),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a>\r\n        <span class=\"catch\">"
+    + escapeExpression(((stack1 = depth0['catch']),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\r\n        <span class=\"access\">"
+    + escapeExpression(((stack1 = depth0.access),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\r\n        <span class=\"address\">"
+    + escapeExpression(((stack1 = depth0.address),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</span>\r\n      </span>\r\n    </li>\r\n    ";
+  return buffer;
+  }
 
-
-  return "Hotpepper";
+  buffer += "<ul id=\"hotpepper_list\">\r\n  ";
+  stack1 = helpers.each.call(depth0, depth0.models, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n</ul>";
+  return buffer;
   });
 
 this["MyApp"]["Templates"]["layout"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -66,14 +88,39 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "Tab\r\n<div id=\"twitter_list\"></div>\r\n<div id=\"hotpepper_list\"></div>";
+  return "<ul id=\"tab\" class=\"nav nav-tabs\">\r\n  <li class=\"active\" data-toggle=\"tab\" data-service=\"twitter\">\r\n    <a href=\"#twitter_list\">Twitter</a>\r\n  </li>\r\n  <li class=\"\" data-toggle=\"tab\" data-service=\"hotpepper\">\r\n    <a href=\"#hotpepper_list\">Hotpepper</a>\r\n  </li>\r\n</ul>\r\n<div id=\"tab-content\" class=\"tab-content\">\r\n  <div class=\"tab-pane active\" id=\"twitter_list\" data-service=\"twitter\"></div>\r\n  <div class=\"tab-pane\" id=\"hotpepper_list\" data-service=\"hotpepper\"></div>\r\n</div>";
   });
 
 this["MyApp"]["Templates"]["twitter"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
   
+  var buffer = "", stack1, stack2;
+  buffer += "\r\n    <li>\r\n      <span class=\"img\">\r\n        <img src=\""
+    + escapeExpression(((stack1 = depth0.profile_image_url),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">\r\n      </span>\r\n      <span class=\"author\">\r\n        <a href=\"https://twitter.com/"
+    + escapeExpression(((stack1 = depth0.from_user),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">@"
+    + escapeExpression(((stack1 = depth0.from_user),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a></span>\r\n        <span class=\"body\">";
+  stack2 = ((stack1 = depth0.text_linked),typeof stack1 === functionType ? stack1.apply(depth0) : stack1);
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "</span>\r\n        <span class=\"time\"><a href=\"https://twitter.com/"
+    + escapeExpression(((stack1 = depth0.from_user),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "/status/"
+    + escapeExpression(((stack1 = depth0.id_str),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" target=\"_blank\">"
+    + escapeExpression(((stack1 = depth0.created_at),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a>\r\n      </span>\r\n    </li>\r\n    ";
+  return buffer;
+  }
 
-
-  return "Twitter";
+  buffer += "<ul id=\"twitter_list\">\r\n  ";
+  stack1 = helpers.each.call(depth0, depth0.models, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n</ul>";
+  return buffer;
   });
