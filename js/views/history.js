@@ -17,6 +17,7 @@ MyApp.Views.History = Backbone.View.extend({
 		this.render();
 
 		MyApp.mediator.on('search', this.addHistory);
+		MyApp.mediator.on('changeTab', this.searchCurrentHistory);
 
 		this.searches.on('add remove', this.render);
 
@@ -35,15 +36,35 @@ MyApp.Views.History = Backbone.View.extend({
 		this.searches.get(id).destroy();
 
 	},
-	
-	searchHistory: function(e){
-	
+
+	searchHistory: function (e) {
+
 		var history = this._getHistory(e);
 
 		MyApp.mediator.trigger('historySearch', history);
-		MyApp.mediator.trigger('historySearch:' + history.service, history);	
+		MyApp.mediator.trigger('historySearch:' + history.service, history);
 	},
-	
+
+	searchCurrentHistory: function (service) {
+
+		var historys = [],
+			history;
+
+		historys = this.searches.where({
+			service: service
+		});
+		
+		if (historys.length) {
+
+			history = historys[0].attributes;
+			
+			MyApp.mediator.trigger('historySearch', history);
+			MyApp.mediator.trigger('historySearch:' + history.service, history);
+
+		}
+
+	},
+
 	render: function () {
 
 		this.$el.html(this.tmpl({
@@ -51,7 +72,7 @@ MyApp.Views.History = Backbone.View.extend({
 		}));
 
 	},
-	
+
 	_getHistory: function (e) {
 
 		var history = {},
