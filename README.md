@@ -382,6 +382,8 @@ footer {
 
 ## <a name='searchToHistory'>SearchBarからHistoryへのイベント伝播</a>
 
+<img src="./img/phase-2_event.png">
+
 **js/app.js**
 ````javascript
 MyApp.App = Backbone.View.extend({
@@ -691,6 +693,8 @@ ol {
 
 ## <a name='searchToResult'>SearchBarからSearchResultへのイベント伝播</a>
 
+<img src="./img/phase-3_event.png">
+
 **js/views/search_bar.js**
 ````javascript
 MyApp.Views.SearchBar = Backbone.View.extend({
@@ -884,6 +888,8 @@ MyApp.Models.Twitter = Backbone.Model.extend({
 
 ## <a name='historyToResult'>HistoryからSearchResultへのイベント伝播</a>
 
+<img src="./img/phase-4_event.png">
+
 **js/views/history.js**
 ````javascript
 MyApp.Views.History = Backbone.View.extend({
@@ -960,6 +966,7 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 
 ## <a name='tabToOther'>Tabから他のViewへのイベント伝播</a>
 
+<img src="./img/phase-5_event.png">
 
 **js/views/tabs.js**
 ````javascript
