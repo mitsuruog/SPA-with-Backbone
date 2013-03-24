@@ -24,7 +24,7 @@ MyApp.Views.Tabs = Backbone.View.extend({
 			
 		});
 		
-		MyApp.mediator.on('search', this.selectTab);
+		MyApp.mediator.on('search historySearch', this.selectTab);
 
 	},
 	

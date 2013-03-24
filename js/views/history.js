@@ -3,7 +3,8 @@ MyApp.Views.History = Backbone.View.extend({
 	tmpl: MyApp.Templates.history,
 
 	events: {
-		'click .btn_delete': 'removeHistory'
+		'click .btn_delete': 'removeHistory',
+		'click .history_contents': 'searchHistory'
 	},
 
 	initialize: function () {
@@ -33,6 +34,14 @@ MyApp.Views.History = Backbone.View.extend({
 		var id = this._getHistory(e).id;
 		this.searches.get(id).destroy();
 
+	},
+	
+	searchHistory: function(e){
+	
+		var history = this._getHistory(e);
+
+		MyApp.mediator.trigger('historySearch', history);
+		MyApp.mediator.trigger('historySearch:' + history.service, history);	
 	},
 	
 	render: function () {
