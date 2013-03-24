@@ -875,10 +875,9 @@ MyApp.Models.Twitter = Backbone.Model.extend({
 </ul>
 ````
 これで、検索ボタンをクリックしてから、結果を表示するまでの一連の機能が実装できました。
-画面ｎは次のように表示されるはずです。
+アプリケーションを実行した場合、次のように表示されるはずです。
 
-
-
+<img src="./img/phase-3.png">
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-3)で参照できます。
 
