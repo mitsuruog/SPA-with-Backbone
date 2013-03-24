@@ -874,6 +874,14 @@ MyApp.Models.Twitter = Backbone.Model.extend({
     {{/each}}
 </ul>
 ````
+これで、検索ボタンをクリックしてから、結果を表示するまでの一連の機能が実装できました。
+画面ｎは次のように表示されるはずです。
+
+
+
+
+ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-3)で参照できます。
+
 
 ## <a name='historyToResult'>HistoryからSearchResultへのイベント伝播</a>
 
@@ -896,7 +904,7 @@ MyApp.Views.History = Backbone.View.extend({
 	
 		var history = this._getHistory(e);
 		
-		//履歴検索のGlobalイベントを発火する
+		//Globalイベント「historySearch」を発火する
 		MyApp.mediator.trigger('historySearch', history);
 		MyApp.mediator.trigger('historySearch:' + history.service, history);	
 	},
@@ -947,7 +955,95 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 	
 ````
 
+これで、検索履歴から再検索できるようになりました。
+
+ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-4)で参照できます。
+
 ## <a name='tabToOther'>Tabから他のViewへのイベント伝播</a>
+
+
+**js/views/tabs.js**
+````javascript
+MyApp.Views.Tabs = Backbone.View.extend({
+
+	tmpl: MyApp.Templates.tabs,
+
+	//Tabクリック時のLocalイベントを監視して、changeTab()を呼び出す
+	events: {
+		'click #tab>li': 'changeTab'
+	},
+
+	// some ..
+
+	changeTab: function (e) {
+
+		var service = this._getService(e.currentTarget);
+		
+		//Globalイベント「changeTab」を発火する
+		MyApp.mediator.trigger('changeTab', service);
+
+	},
+	
+	// some ...
+
+	_getService: function (tab) {
+
+		return $(tab).data('service');
+
+	}
+
+});
+
+````
+
+**js/views/tabs.js**
+````javascript
+MyApp.Views.History = Backbone.View.extend({
+
+	// some ...
+
+	initialize: function () {
+
+		// some ...
+
+		//Tabクリック時のLocalイベントを監視して、searchCurrentHistory()を呼び出す
+		MyApp.mediator.on('changeTab', this.searchCurrentHistory);
+
+		this.searches.on('add remove', this.render);
+
+	},
+	
+	// some ...
+
+	searchCurrentHistory: function (service) {
+
+		var historys = [],
+			history;
+
+		historys = this.searches.where({
+			service: service
+		});
+		
+		if (historys.length) {
+
+			history = historys[0].attributes;
+			
+			//Globalイベント「historySearch」を発火する
+			MyApp.mediator.trigger('historySearch', history);
+			MyApp.mediator.trigger('historySearch:' + history.service, history);
+
+		}
+
+	},
+	
+	// some ...
+
+});
+````
+
+これで、タブをクリックした際に、再検索できるようになりました。
+
+ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-5)で参照できます。
 
 ## <a name='finish'>仕上げ</a>
 
