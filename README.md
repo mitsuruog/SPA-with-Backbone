@@ -877,6 +877,75 @@ MyApp.Models.Twitter = Backbone.Model.extend({
 
 ## <a name='historyToResult'>HistoryからSearchResultへのイベント伝播</a>
 
+**js/views/history.js**
+````javascript
+MyApp.Views.History = Backbone.View.extend({
+
+	tmpl: MyApp.Templates.history,
+
+	events: {
+		'click .btn_delete': 'removeHistory',
+		
+		//履歴クリック時のLocalイベントを監視して、searchHistory()を呼び出す
+		'click .history_contents': 'searchHistory'
+	},
+
+	// some ...
+	
+	searchHistory: function(e){
+	
+		var history = this._getHistory(e);
+		
+		//履歴検索のGlobalイベントを発火する
+		MyApp.mediator.trigger('historySearch', history);
+		MyApp.mediator.trigger('historySearch:' + history.service, history);	
+	},
+	
+	// some ...
+
+});
+````
+
+**js/views/tabs.js**
+````javascript
+MyApp.Views.Tabs = Backbone.View.extend({
+
+	tmpl: MyApp.Templates.tabs,
+
+	initialize: function () {
+
+		// some ...
+		
+		//履歴クリック時のGlobalイベントを監視して、selectTab()を呼び出す
+		MyApp.mediator.on('search historySearch', this.selectTab);
+
+	},
+	
+	// some ...
+
+});
+````
+
+**js/views/search_results.js**
+````javascript
+MyApp.Views.SearchResults = Backbone.View.extend({
+
+	initialize: function () {
+		
+		// some ...
+		
+		MyApp.mediator.on('search:' + this.service, this.search);
+		
+		//履歴クリック時のGlobalイベントを監視して、search()を呼び出す
+		MyApp.mediator.on('historySearch:' + this.service, this.search);
+
+		this.collections.on('reset', this.render);
+		
+	},
+	
+	// some ...
+	
+````
 
 ## <a name='tabToOther'>Tabから他のViewへのイベント伝播</a>
 
