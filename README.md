@@ -380,34 +380,52 @@ footer {
 
 
 
-## <a name='searchToHistory'>SearchBarからHistoryへのイベント伝播</a>
+## <a name='searchToHistory'>SearchBarからHistoryへのイベント連携</a>
+
+これから説明していく各サブビュー間のイベント連携は、PresidentViewが所有するMediatorオブジェクトを仲介して行います。
+
+まず、SearchBarからHistoryへのイベント連携から説明していきます。
+
+ユーザが検索ボタンをクリックした場合、SearchBarは`click`イベントをハンドリングし、Globalレベルのイベント`search`を発火します。
+Historyでは`search`イベントをハンドリングして、localStorageに検索条件などを記録します。
+
+これらを図にしたものが次の図です。
 
 <img src="./img/phase-2_event.png">
 
 **js/app.js**
+
+Globalレベルのイベントを統括するMediatorオブジェクトを作成して保有しておきます。
+
+ここでのポイントは
+
+HistoryViewを初期化する際に、管理させるCollectionオブジェクトを外部から渡すことです。
+外部から管理するオブジェクトを渡すことで、管理する機能（View）と管理対象（Collection）を分離します。
+これ後々、管理対象をLocalStorageからRDBMSなどの置き換えを行う際、Collectionのみの置き換えで実現させるためです。
+
 ````javascript
 MyApp.App = Backbone.View.extend({
 
- el: '#app',
+  el: '#app',
 
-	tmpl: MyApp.Templates.layout,
+  tmpl: MyApp.Templates.layout,
 
-	initialize: function () {
+  initialize: function () {
 
-		//Mediator作成
-		MyApp.mediator = {};
-		_.extend(MyApp.mediator, Backbone.Events);
-		
-		this.$el.html(this.tmpl());
+    //Mediator作成
+    MyApp.mediator = {};
+    _.extend(MyApp.mediator, Backbone.Events);
+    
+    this.$el.html(this.tmpl());
 
-		this.history = new MyApp.Views.History({
-			el: this.$el.find('#history_list'),
-			searches: new MyApp.Collections.SearchHistoryList()
-		});
+    this.history = new MyApp.Views.History({
+      el: this.$el.find('#history_list'),
+      searches: new MyApp.Collections.SearchHistoryList()
+    });
 
   // some...
 
-	}
+  }
 
 });
 
@@ -415,105 +433,134 @@ new MyApp.App();
 ````
 
 **js/views/search_bar.js**
+
+検索ボタンがクリックされた際に発生する`click`イベントをハンドリングして`search()`を呼び出します。
+
+`search()`の内部でGlobalレベルのイベント`search`を発火します。
+
 ````javascript
 MyApp.Views.SearchBar = Backbone.View.extend({
 
  tmpl: MyApp.Templates.search_bar,
 
  //Localレベルイベントの定義
-	events: {
-		'click #btn_search': 'search'
-	},
+  events: {
+    'click #btn_search': 'search'
+  },
 
- // some...
+  // some...
 
-	search: function (e) {
+  search: function (e) {
 
-		var $checked = this.$el.find('input[type=radio]:checked'),
-			query = $('#query').val(),
-			service = $checked.val(),
-			search = {};
+    var $checked = this.$el.find('input[type=radio]:checked'),
+      query = $('#query').val(),
+      service = $checked.val(),
+      search = {};
 
-		e.preventDefault();
+    e.preventDefault();
 
-		search.query = query;
-		search.service = service;
+    search.query = query;
+    search.service = service;
 
-  //「search」イベントを発火する
-  MyApp.mediator.trigger('search', search);
+   //「search」イベントを発火する
+   MyApp.mediator.trigger('search', search);
 
-	}
+  }
 
 });
 ````
 
 **js/views/History.js**
+
+Globalレベルのイベント`search`をハンドリングして`addHistory()`を呼び出し、その中でCollectionオブジェクトに検索履歴を1件追加します。
+Collectionオブジェクトは内部でLocalStorageと自動的に同期します。
+
+Collectionを追加すると`add`イベントが発火するので、これをハンドリングして`render()`を呼び出し、画面に描画を行います。
+
+ちなみに、検索履歴の削除ボタンをクリックした際に、LocalStorageから履歴を削除する実装も行っています。
+Localレベルのイベントを、SubView自身で処理する際の参考実装としてください。
+
+ここでのポイントは
+
+まず、`initialize()`での`_.bindAll(this)`です。
+今回のように、Mediatorオブジェクトを介したイベント駆動型で実装した場合、javascript特有のthisの喪失が多発します。
+_.bindAllすることで、常にthisはViewオブジェクトを指し示します。
+
+2つめは、イベントハンドリングからレンダリング`render()`までの処理の流れです。
+これは、`ハンドリング→（レンダリング・データの更新）`の順ではなく、`ハンドリング→データの更新→レンダリング`となっている点で、
+基本的にイベントが起点となって各処理が実行されるようになっています。
+ハンドリング、データの更新、レンダリングの各処理をイベントで疎結合にすることで、
+それぞれ依存することなく単独でテストしやすくなります。
+
 ````javascript
 MyApp.Views.History = Backbone.View.extend({
 
- tmpl: MyApp.Templates.history,
+  tmpl: MyApp.Templates.history,
 
- //Localレベルイベントの定義
-	events: {
-		'click .btn_delete': 'removeHistory'
-	},
+  //Localレベルイベントの定義
+  events: {
+    'click .btn_delete': 'removeHistory'
+  },
 
-	initialize: function () {
+  initialize: function () {
 
-		_.bindAll(this);
+    _.bindAll(this);
 
-		this.searches = this.options.searches;
+    this.searches = this.options.searches;
 
-		this.searches.fetch();
-		this.render();
+    this.searches.fetch();
+    this.render();
   
-  //Globalレベルイベントをバインド
-  MyApp.mediator.on('search', this.addHistory);
+    //Globalレベルイベントをバインド
+    MyApp.mediator.on('search', this.addHistory);
 
-  //Localレベルイベントをバインド
-		this.searches.on('add remove', this.render);
+    //Localレベルイベントをバインド
+    this.searches.on('add remove', this.render);
 
-	},
+  },
 
-	addHistory: function (search) {
+  addHistory: function (search) {
 
-		search.id = +new Date();
-		this.searches.create(search);
+    search.id = +new Date();
+    this.searches.create(search);
 
-	},
+  },
 
-	removeHistory: function (e) {
+  removeHistory: function (e) {
 
-		var id = this._getHistory(e).id;
-		this.searches.get(id).destroy();
+    var id = this._getHistory(e).id;
+    this.searches.get(id).destroy();
 
-	},
+  },
 
-	render: function () {
+  render: function () {
 
-		this.$el.html(this.tmpl({
-			history: this.searches.toJSON()
-		}));
+    this.$el.html(this.tmpl({
+      history: this.searches.toJSON()
+    }));
 
-	},
-	
-	_getHistory: function (e) {
+  },
+  
+  _getHistory: function (e) {
 
-		var history = {},
-		$target = $(e.target).closest('.history');
+    var history = {},
+    $target = $(e.target).closest('.history');
 
-		history.id = $target.attr('data-id');
-		history.service = $target.find('.service').text().replace(/^\(|\)$/g, '');
-		history.query = $target.find('.query').text();
+    history.id = $target.attr('data-id');
+    history.service = $target.find('.service').text().replace(/^\(|\)$/g, '');
+    history.query = $target.find('.query').text();
 
-		return history;
+    return history;
 
-	}
+  }
 
 });
 ````
 
 **js/collections/search_history_list.js**
+
+Collectionの中身はLocalStorageに記録するユニークなキーを設定します。
+
 ````javascript
 MyApp.Collections.SearchHistoryList = Backbone.Collection.extend({
   
@@ -523,6 +570,9 @@ MyApp.Collections.SearchHistoryList = Backbone.Collection.extend({
 ````
 
 **hbs/search_bar.hbs**
+
+検索条件欄のテンプレートです。ここではTwitter Bootstrapを使用しています。
+
 ````html
 <div class="navbar navbar-inverse">
   <div class="navbar-inner">
@@ -548,6 +598,10 @@ MyApp.Collections.SearchHistoryList = Backbone.Collection.extend({
 ````
 
 **hbs/history.hbs**
+
+handlebars.jsでの繰り返し処理です。
+template関数に渡された引数オブジェクトの中の`history`を繰り返します。
+
 ````html
 {{#each history}}
 <ul class="history" data-id="{{this.id}}">
