@@ -747,159 +747,209 @@ ol {
 
 ## <a name='searchToResult'>SearchBarからSearchResultへのイベント伝播</a>
 
+前のパートでは、SearchBarからHistoryまでのイベント連携について説明しました。
+このパートでは、SearchBarからSearchResultへの連携について説明します。
+_実際のアプリケーションではHotpepperの検索サービスも実装していますが、冗長なので今回はTwitterに絞って説明します。_
+
+検索ボタンをクリックした際に新たに`search:serviceName`イベントを発火します。
+TabsViewとSearchResultsViewにてハンドリングしてそれぞれ処理を行います。
+TabsViewでは、タブの表示制御を行います。SearchResultsViewではWebAPIを呼び出して結果をレンダリングします。
+
+これらの流れを図にしたものが以下の図です。
+
 <img src="./img/phase-3_event.png">
 
 **js/views/search_bar.js**
+
+新たに`search:serviceName`イベントを発火します。
+
 ````javascript
 MyApp.Views.SearchBar = Backbone.View.extend({
 
- // some...
+  // some...
 
-	search: function (e) {
+  search: function (e) {
 
-		// some...
+    // some...
 
-  //「search」「search:イベント名」イベントを発火する
-		MyApp.mediator.trigger('search', search);
-		MyApp.mediator.trigger('search:' + service, search);
+    //「search」「search:イベント名」イベントを発火する
+    MyApp.mediator.trigger('search', search);
+    MyApp.mediator.trigger('search:' + service, search);
 
-	}
+  }
 
 });
 ````
 
 **js/views/tabs.js**
+
+ManagerViewです。管理するSubViewを作成して保有しておきます。
+Globalレベルの`search`イベントをハンドリングして`selectTab()`にてタブ表示の切り替えを行います。
+
+ここでのポイントは
+
+SubViewを初期化する際に、SubViewの管理対象を外部から渡たすことです。
+これにより、SearchResultsViewの内部実装を変えることなく、検索サービスを増やすことが出来ます。
+
 ````javascript
 MyApp.Views.Tabs = Backbone.View.extend({
 
  tmpl: MyApp.Templates.tabs,
 
-	initialize: function () {
-		
-		this.$el.html(this.tmpl());
+  initialize: function () {
+    
+    this.$el.html(this.tmpl());
 
-		this.twitters = new MyApp.Views.SearchResults({
-			
-			el: this.$el.find('#twitter_list'),
-			tmpl: MyApp.Templates.twitter,
-			collections: new MyApp.Collections.TwitterList(),
-			service: 'twitter'
-			
-		});
+    this.twitters = new MyApp.Views.SearchResults({
+      
+      el: this.$el.find('#twitter_list'),
+      tmpl: MyApp.Templates.twitter,
+      collections: new MyApp.Collections.TwitterList(),
+      service: 'twitter'
+      
+    });
 
-		this.hotppepers = new MyApp.Views.SearchResults({
-			
-			el: this.$el.find('#hotpepper_list'),
-			tmpl: MyApp.Templates.hotpepper,
-			collections: new MyApp.Collections.HotpepperList(),
-			service: 'hotpepper'
-			
-		});
-		
-  //Globalレベルイベントをバインド
-		MyApp.mediator.on('search', this.selectTab);
+    this.hotppepers = new MyApp.Views.SearchResults({
+      
+      el: this.$el.find('#hotpepper_list'),
+      tmpl: MyApp.Templates.hotpepper,
+      collections: new MyApp.Collections.HotpepperList(),
+      service: 'hotpepper'
+      
+    });
+    
+    //Globalレベルイベントをバインド
+    MyApp.mediator.on('search', this.selectTab);
 
-	},
-	
-	selectTab: function(search){
-	
-		$('a[href^=#' + search.service + ']').tab('show');
-	
-	}
+  },
+  
+  selectTab: function(search){
+  
+    $('a[href^=#' + search.service + ']').tab('show');
+  
+  }
 
 });
 ````
 
 **js/views/search_results.js**
+
+Globalイベントの`search:serviceName`イベントをハンドリングして`search()`を呼び出します。
+`search()`はこのViewが持つCollectionの共通インターフェースで、実際の処理は各Collectionの`search()`にて記述します。
+
+`search()`の内部ではWebAPIを呼び出して結果をCollectionに格納します。その際に`reset`イベントが発火されるので、
+これをハンドリングして`render()`を呼び出しレンダリングします。
+レンダリングする際のテンプレートはManagerViewから渡されます。
+
+ここでのポイントは
+
+SubViewは出来る限り機能を抽象化して、必要なものはView生成時に外部から渡すことです。
+これによりSubViewが再利用できます。
+
 ````javascript
 MyApp.Views.SearchResults = Backbone.View.extend({
 
  initialize: function () {
-		
-		_.bindAll(this);
+    
+    _.bindAll(this);
 
-		this.collections = this.options.collections;
-		this.tmpl = this.options.tmpl;
-		this.service = this.options.service;
+    this.collections = this.options.collections;
+    this.tmpl = this.options.tmpl;
+    this.service = this.options.service;
 
-  //Globalレベルイベントをバインド
-		MyApp.mediator.on('search:' + this.service, this.search);
+    //Globalレベルイベントをバインド
+    MyApp.mediator.on('search:' + this.service, this.search);
 
-  //Localレベルイベントをバインド
-		this.collections.on('reset', this.render);
-		
-	},
-	
-	
-search: function(search){
+    //Localレベルイベントをバインド
+    this.collections.on('reset', this.render);
+    
+  },
+  
+  
+  search: function(search){
 
-	this.collections.search(search);
+    this.collections.search(search);
 
-},
+  },
 
-render: function () {
+  render: function () {
 
-		this.$el.html(this.tmpl({
-			models: this.collections.toJSON()
-		}));
+    this.$el.html(this.tmpl({
+      models: this.collections.toJSON()
+    }));
 
-	}
-	
+  }
+  
 });
-
 ````
 
-
 **js/collections/twitter_list.js**
+
+Collectionでは実際のWebAPIにFetchするための情報を定義します。
+
+ここでのポイントは
+
+WebAPIから取得したJSONが（ネストしている場合など）そのままではCollectionとして利用できない場合、
+`parse()`にてJSONオブジェトから必要な部分を抜き出し、後方のメソッドに渡しているところです。
+Viewで同様のことを行う実装を時々見かけますが、ロジックが分散してしまうのであまりお勧めしません。
+
+下の例では`response.results`にtweetのArrayが格納されています。
+
 ````javascript
 MyApp.Collections.TwitterList = Backbone.Collection.extend({
 
- url: 'http://search.twitter.com/search.json',
+  url: 'http://search.twitter.com/search.json',
 
-	model: MyApp.Models.Twitter,
+  model: MyApp.Models.Twitter,
 
-	search: function (param) {
+  search: function (param) {
 
-		this.fetch({
-			data: {
-				q: encodeURIComponent(param.query)
-			},
-			dataType: 'jsonp'
-		});
+    this.fetch({
+      data: {
+        q: encodeURIComponent(param.query)
+      },
+      dataType: 'jsonp'
+    });
 
-	},
+  },
 
-	parse: function (response, options) {
+  parse: function (response, options) {
 
-		this.response = response;
+    this.response = response;
 
-		return response.results;
+    return response.results;
 
-	}
+  }
 
 });
 ````
 
 **js/models/twitter.js**
+
+Modelではtweetの中のリンク（っぽい）文字列のリンク化と日付のフォーマットを行っています。
+
 ````javascript
 MyApp.Models.Twitter = Backbone.Model.extend({
 
  set: function (attrs, options) {
 
-		if (attrs.text) {
-			attrs.text_linked = twttr.txt.autoLink(attrs.text);
-		}
-		if (attrs.created_at) {
-			attrs.created_at = moment(attrs.created_at).format('YYYY/MM/DD HH:MM:SS');
-		}
+    if (attrs.text) {
+      attrs.text_linked = twttr.txt.autoLink(attrs.text);
+    }
+    if (attrs.created_at) {
+      attrs.created_at = moment(attrs.created_at).format('YYYY/MM/DD HH:MM:SS');
+    }
 
-		return Backbone.Model.prototype.set.call(this, attrs, options);
-	}
+    return Backbone.Model.prototype.set.call(this, attrs, options);
+  }
 
 });
 ````
 
 **hbs/tabs.hbs**
+
+TwitterとHotpepperタブのテンプレートです。
+
 ````html
 <ul id="tab" class="nav nav-tabs">
   <li class="active" data-toggle="tab" data-service="twitter">
@@ -916,6 +966,9 @@ MyApp.Models.Twitter = Backbone.Model.extend({
 ````
 
 **hbs/tabs.twitter.hbs**
+
+ここでは`models`を繰り返しています。
+
 ````html
 <ul id="twitter_list">
   {{#each models}}
