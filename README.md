@@ -993,11 +993,20 @@ TwitterとHotpepperタブのテンプレートです。
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-3)で参照できます。
 
 
-## <a name='historyToResult'>HistoryからSearchResultへのイベント伝播</a>
+## <a name='historyToResult'>HistoryからSearchResultへのイベント連携</a>
+
+続いて、HistoryからSearchResultへのイベント連携部分について説明していきます。
+
+HistoryViewにて検索履歴をクリックしたした際に、Globalイベント`historySearch`と`historySearch:serviceName`を発火します。
+TabsViewでは`historySearch`を、SearchResultsViewでは`historySearch:serviceName`をハンドリングしてそれぞれ処理を行います。
+処理はSearchBarからSearchResultへのイベント連携で作成したものをそのまま流用します。
 
 <img src="./img/phase-4_event.png">
 
 **js/views/history.js**
+
+検索履歴の`click`イベントを監視して、`historySearch`と`historySearch:serviceName`を発火させます。
+
 ````javascript
 MyApp.Views.History = Backbone.View.extend({
 
@@ -1027,6 +1036,9 @@ MyApp.Views.History = Backbone.View.extend({
 ````
 
 **js/views/tabs.js**
+
+Globalイベント`historySearch`を監視します。
+
 ````javascript
 MyApp.Views.Tabs = Backbone.View.extend({
 
@@ -1047,6 +1059,9 @@ MyApp.Views.Tabs = Backbone.View.extend({
 ````
 
 **js/views/search_results.js**
+
+Globalイベント`historySearch:serviceName`を監視します。
+
 ````javascript
 MyApp.Views.SearchResults = Backbone.View.extend({
 
@@ -1069,13 +1084,24 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 
 これで、検索履歴から再検索できるようになりました。
 
+それぞれのSubViewの連携をイベントで行うことで部品の再利用が進みます。
+
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-4)で参照できます。
 
-## <a name='tabToOther'>Tabから他のViewへのイベント伝播</a>
+## <a name='tabToOther'>Tabから他のViewへのイベント連携</a>
+
+最後は、Tabから他のViewへのイベント連携の部分を説明していきます。
+
+タブをクリックした際にGlobalイベント`changeTab`を発火します。
+HistoryViewでは`changeTab`を監視し、検索履歴のCollection内から該当するサービスの最も直近に検索したキーワードを探し出します。
+その後は、HistoryからSearchResultへのイベント連携部分をそのまま使います。
 
 <img src="./img/phase-5_event.png">
 
 **js/views/tabs.js**
+
+タブの`click`イベントを監視して、Globalイベント`changeTab`を発火します。
+
 ````javascript
 MyApp.Views.Tabs = Backbone.View.extend({
 
@@ -1110,6 +1136,10 @@ MyApp.Views.Tabs = Backbone.View.extend({
 ````
 
 **js/views/tabs.js**
+
+Globalイベント`chnageTab`を監視して、直近の検索のキーワードと共に、
+Globalイベント`historySearch`と`historySearch:serviceName`を発火します。
+
 ````javascript
 MyApp.Views.History = Backbone.View.extend({
 
@@ -1154,7 +1184,7 @@ MyApp.Views.History = Backbone.View.extend({
 });
 ````
 
-これで、タブをクリックした際に、再検索できるようになりました。
+これで、タブをクリックした際に、再検索できるようになりました。ここでも部品の再利用が効いています。Backbone素敵！
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-5)で参照できます。
 
