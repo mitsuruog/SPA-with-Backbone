@@ -8,7 +8,7 @@ MyApp.Collections.TwitterList = Backbone.Collection.extend({
 
 		this.fetch({
 			data: {
-				q: encodeURIComponent(param.query),
+				q: encodeURIComponent(param.query)
 			},
 			dataType: 'jsonp'
 		});
