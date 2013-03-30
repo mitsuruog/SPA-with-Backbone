@@ -1,32 +1,33 @@
 MyApp.Views.SearchResults = Backbone.View.extend({
 
-	initialize: function (options) {
-
+	initialize: function () {
+		
 		_.bindAll(this);
 
-		this.collections = options.collections;
-		this.tmpl = options.tmpl;
-		this.service = options.service;
+		this.collections = this.options.collections;
+		this.tmpl = this.options.tmpl;
+		this.service = this.options.service;
 
-		MyApp.Mediator.on('search:add:' + this.service + ' search:history:' + this.service, this.search);
+		MyApp.mediator.on('search:' + this.service, this.search);
+		MyApp.mediator.on('historySearch:' + this.service, this.search);
 
 		this.collections.on('reset', this.render);
+		
 	},
+	
+	
+search: function(search){
 
-	search: function (search) {
+	this.collections.search(search);
 
-		this.collections.search(search);
+},
 
-	},
-
-	render: function () {
+render: function () {
 
 		this.$el.html(this.tmpl({
 			models: this.collections.toJSON()
 		}));
-		
-		MyApp.Mediator.trigger('select:tab', this.$el.data('service'));
 
 	}
-
+	
 });

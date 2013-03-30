@@ -2,14 +2,15 @@
 @import "color_thema.styl"
 @charset"utf-8";
 
-$conteiner_width = 98%
+$conteiner_width = 100%
 
 body
  margin 0
  padding 0
+ font-family 'Roboto Condensed', sans-serif;
  thema_blue_color()
  thema_blue_body()
-
+ 
 ul,
 ol
  margin 0
@@ -19,13 +20,16 @@ ol
  width 100%
 
 #header-container
- height 35px
+ height 34px
  thema_blue_special_container()
 
 #header
  width $conteiner_width
  margin 0 auto
  position relative
+
+.brand
+ font-family 'Averia Gruesa Libre', cursive;
 
 #search_types
  margin-left 10px
@@ -44,15 +48,6 @@ ol
  padding-top 35px
  padding-bottom 25px
  
-#search_results
- float right
- width 70%
- margin-top 1px
- thema_blue_results_background()
- 
-#tab-content li
- thema_blue_results_border()
-
 #history
  float left
  width 30%
@@ -66,27 +61,58 @@ ol
  
 .history
  thema_blue_sidebar_border()
+ padding 9px 4px
 
 .history:hover
  thema_blue_sidebar_hover()
+
+.history .btn_delete
+ visibility hidden
+
+.history:hover .btn_delete
+ visibility visible
+
+.history
+  clearfix()
  
 #history_list li
  list-style-type none
- 
+ float left
+
+.history_buttons
+ float right !important
+
+/* .btn_delete
+position absolute
+ margin-top 5px
+ margin-left 5px*/
+
+.history_contents,
+.btn_delete
+ cursor pointer
+
+#search_results
+ float right
+ width 70%
+ thema_blue_results_background()
+
+#tab-content li
+ thema_blue_results_border()
+
 #footer-wrap
  fixed(bottom left)
  width 100%
  
 #footer-container
- height 25px
+ height 24px
  thema_blue_special_container()
  
 #footer
  width $conteiner_width
  margin 0 auto
  position relative
- zurui_line()
- 
+
+
 /*----------- bootstrap-narrowバグ（？） ---------------*/
 
 .btn-mini [class^="icon-"],
@@ -96,7 +122,7 @@ ol
 .btn {
   line-height: 19px;
 }
-input[type="radio"], 
+input[type="radio"],
 input[type="checkbox"] {
   margin: 0;
 }

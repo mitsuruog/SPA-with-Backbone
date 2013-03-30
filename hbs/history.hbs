@@ -1,11 +1,11 @@
 {{#each history}}
 <ul class="history" data-id="{{this.id}}">
-  <li class="query">{{this.query}}</li>
-  <li class="service">({{this.service}})</li>
-  <li class="search-buttons">
-    <button class="btn btn-mini btn-danger btn-delete">
-      <i class="icon-remove-sign icon-white"></i>
-    </button>
+  <li class="history_contents">
+    <span class="query">{{this.query}}</span>
+    <span class="service">({{this.service}})</span>
+  </li>
+  <li class="history_buttons">
+    <button class="btn btn-danger btn_delete">del</button>
   </li>
 </ul>
 {{/each}}

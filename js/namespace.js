@@ -3,6 +3,5 @@ var MyApp = {
     Collections: {},
     Views: {},
     App: {},
-    Mediator: {},
     Templates: {}
 };

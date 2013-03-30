@@ -6,48 +6,49 @@ MyApp.Views.Tabs = Backbone.View.extend({
 		'click #tab>li': 'changeTab'
 	},
 
-	/**
-	 * 初期化
-	 * @method initialize
-	 * @type {Function}
-	 */
 	initialize: function () {
-
-		_.bindAll(this);
 
 		this.$el.html(this.tmpl());
 
-		this.twitterResult = new MyApp.Views.SearchResults({
+		this.twitters = new MyApp.Views.SearchResults({
+
 			el: this.$el.find('#twitter_list'),
-			collections: new MyApp.Collections.TwitterList(),
 			tmpl: MyApp.Templates.twitter,
+			collections: new MyApp.Collections.TwitterList(),
 			service: 'twitter'
+
 		});
 
-		this.hotpepperResult = new MyApp.Views.SearchResults({
+		this.hotppepers = new MyApp.Views.SearchResults({
+
 			el: this.$el.find('#hotpepper_list'),
-			collections: new MyApp.Collections.HotpepperList(),
 			tmpl: MyApp.Templates.hotpepper,
+			collections: new MyApp.Collections.HotpepperList(),
 			service: 'hotpepper'
+
 		});
 
-		MyApp.Mediator.on('select:tab change:tab', this.selectTab);
+		MyApp.mediator.on('search historySearch', this.selectTab);
 
 	},
 
 	changeTab: function (e) {
+
 		var service = this._getService(e.currentTarget);
-		MyApp.Mediator.trigger('change:tab', service);
+		MyApp.mediator.trigger('changeTab', service);
+
 	},
 
-	selectTab: function (service) {
+	selectTab: function (search) {
 
-		$('a[href^=#' + service + ']').tab('show');
+		$('a[href^=#' + search.service + ']').tab('show');
 
 	},
 
 	_getService: function (tab) {
+
 		return $(tab).data('service');
+
 	}
 
 });
