@@ -354,30 +354,36 @@ MyApp.Views.Footer = Backbone.View.extend({
 </footer>
 ````
 
-**hbs/*.hbs**
-
-残りのテンプレートは特に何もしていないため、さらっと流します。
+**hbs/search_bar.hbs**
 ````html
-// hbs/search_bar.hbs
 Search Bar
+````
 
-// hbs/history.hbs
+**hbs/history.hbs**
+````html
 History
+````
 
-// hbs/tabs.hbs
+**hbs/tabs.hbs**
+````html
 Tab
 <div id="twitter_list"></div>
 <div id="hotpepper_list"></div>
+````
 
-// hbs/twitter.hbs
+**hbs/twitter.hbs**
+````html
 Twitter
+````
 
-// hbs/hotppeper.hbs
+**hbs/hotpepper.hbs**
+````html
 Hotppeper
+````
 
-// hbs/footer.hbs
+**hbs/footer.hbs**
+````html
 Footer
-
 ````
 
 **css/main.css**
