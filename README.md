@@ -5,15 +5,15 @@
 ## <a name='mokuji'>目次</a>
 1. [はじめに](#intro)
 1. [ディレクトリ構成・使用ライブラリ](#pageStructure)
-1. [View統治ポリシー](#viewManagePolicies)
-1. [イベント統治ポリシー](#eventManagePolicies)
+1. [View分割ポリシー](#viewManagePolicies)
+1. [イベント連携ポリシー](#eventManagePolicies)
 1. [ワイアーフレーム作成](#makeWireframe)
-1. [SearchBarからHistoryへのイベント伝播](#searchToHistory)
-1. [SearchBarからSearchResultへのイベント伝播](#searchToResult)
-1. [HistoryからSearchResultへのイベント伝播](#historyToResult)
-1. [Tabから他のViewへのイベント伝播](#tabToOther)
-1. [仕上げ](#finish)
-1. [まとめ](#summary)
+1. [SearchBarからHistoryへのイベント連携](#searchToHistory)
+1. [SearchBarからSearchResultへのイベント連携](#searchToResult)
+1. [HistoryからSearchResultへのイベント連携](#historyToResult)
+1. [Tabから他のViewへのイベント連携](#tabToOther)
+1. [完成](#complate)
+1. [TODO](#todo)
  
 ## <a name='intro'>1.はじめに</a>
 
@@ -23,8 +23,10 @@ Gmailのようなシングルページで動作するWebアプリケーション
 特に、Backbone.jsを作成する際に悩む人が多いとされている、
 Viewの分割とViewの間のイベントのやり取りについて重点的に説明します。
 
-Backbone.jsのドキュメントは英語のみとなっていますが、
-私も翻訳に参加している[**enjaの日本語訳版**](https://github.com/enja-oss/Backbone/tree/master/docs)もありますので、よろしければ参考にしてください。
+> **日本語訳ドキュメントについて**
+
+> backbone.jsのドキュメントは[enjaによる日本語訳版](https://github.com/enja-oss/Backbone/tree/master/docs)もあります。
+よろしければ参考にしてください。
 
 ### <a name='wireframe'>ワイアーフレーム</a>
 
@@ -43,40 +45,87 @@ TwitterなどのWebAPIに対して検索条件を指定して検索結果を表�
 * 検索結果の表示：検索サービスごとにタブを分けて表示する。
 * 検索履歴の表示：検索されたキーワードを表示する。
 
-<a href='#mokuji'>TOPへ</a>
+<a href='#mokuji'>[:point_up:]</a>
 
-## <a name='pageStructure'>ページ構成</a>
+## <a name='pageStructure'>ディレクトリ構成・使用ライブラリ</a>
 
-### ディレクトリ構成・使用ライブラリ
+### ディレクトリ構成
 
-ページ構成は以下の通りです。
+ディレクトリ構成は以下の通りです。
 
-
+````
+App root
+│
+│  index.html
+│  
+├─assets
+│          
+├─css
+│  │  main.css
+│  └─styl
+│          color_thema.styl
+│          main.styl
+│          
+├─hbs
+│      footer.hbs
+│      history.hbs
+│      hotpepper.hbs
+│      layout.hbs
+│      search_bar.hbs
+│      tabs.hbs
+│      twitter.hbs
+│      
+└─js
+   │  app.js
+   │  namespace.js
+   │  
+   ├─collections
+   │      hotpepper_list.js
+   │      search_history_list.js
+   │      twitter_list.js
+   │      
+   ├─models
+   │      hotpepper.js
+   │      twitter.js
+   │      
+   ├─templates
+   │      layout.js
+   │      
+   └─views
+           footer.js
+           history.js
+           search_bar.js
+           search_results.js
+           tabs.js
+````
 
 ### 使用ライブラリ
 
 以下のライブラリを使用しています。
+`（任意）`となっているライブラリについては、アプリケーションを動かす上で必須ではありませんので、
+使用しない、または他のライブラリを採用していただいても結構です。
 
-* Backbone.js
-* Underscore.js
-* jQuery
-* backbone.localStorage.js
-* moment.js
-* handlebars.js（任意）
+* javascript
+ * Backbone.js
+ * Underscore.js
+ * jQuery
+ * backbone.localStorage.js
+ * handlebars.js（任意）
+ * moment.js（任意）
+ * twitter-text.js（任意）
+* css
+ * bootstrap.css（任意）
+ * bootstrap-narrow.css（任意）
 
-デザインはBootstrapです。
+> **ビルドプロセスについて**
 
-###　補足
+> このチュートリアルでは、handlebarsとstylusを使用しています。これらはGrunt.jsを使ってビルドしていますが、このチュートリアルでは詳しく説明しません。
+Gruntの設定については、[Gruntfile.js](https://github.com/mitsuruog/SPA-with-Backbone/blob/master/Gruntfile.js)または、
+[package.json](https://github.com/mitsuruog/SPA-with-Backbone/blob/master/package.json)を参考にしてください。
 
-テンプレートエンジンにhandlebars.jsを利用しています。
-こちらはUnderscore.jsのtemplateや他のテンプレートエンジンで代用することも可能です。
+<a href='#mokuji'>[:point_up:]</a>
 
-また、CSSプリプロセッサにStylusを利用していますが、この説明ではコンパイル後のピュアなCSSをベースに話を進めていきます。（とは言っても、CSSがメインテーマではないため、ほとんど話には登場しません。）
-
-これらにはビルドプロセスが必須ですので、Gruntを使ってビルドしています。
-Gruntの設定については詳しく説明しませんが、Gruntfile.jsは[こちら](https://github.com/mitsuruog/SPA-with-Backbone/blob/master/Gruntfile.js)を参考にしてください。
-
-## <a name='viewManagePolicies'>View統治ポリシー</a>
+## <a name='viewManagePolicies'>View分割ポリシー</a>
 
 Viewは「ManagerView」と「SubView」の2つに分類し、アプリケーションのトップレベルにあるManagerViewを特別に「PresidentView」と呼びます。
 ManagerViewはSubViewのオブジェクトを保持し、管理するSubViewを外側から制御する責務（Viewの切り替えなど）のみを持ちます。
@@ -97,7 +146,11 @@ PresidentViewはアプリケーションが初期化される際に初期化さ�
 
 <img src="./img/viewPolicy.png">
 
+<a href='#mokuji'>[:point_up:]</a>
+
 ## <a name='eventManagePolicies'>イベント統治ポリシー</a>
+
+<a href='#mokuji'>[:point_up:]</a>
 
 ## <a name='makeWireframe'>ワイアーフレーム作成</a>
 
@@ -387,7 +440,7 @@ footer {
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-1)で参照できます。
 
-
+<a href='#mokuji'>[:point_up:]</a>
 
 ## <a name='searchToHistory'>SearchBarからHistoryへのイベント連携</a>
 
@@ -754,7 +807,9 @@ ol {
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-1)で参照できます。
 
-## <a name='searchToResult'>SearchBarからSearchResultへのイベント伝播</a>
+<a href='#mokuji'>[:point_up:]</a>
+
+## <a name='searchToResult'>SearchBarからSearchResultへのイベント連携</a>
 
 前のパートでは、SearchBarからHistoryまでのイベント連携について説明しました。
 このパートでは、SearchBarからSearchResultへの連携について説明します。
@@ -1001,6 +1056,7 @@ TwitterとHotpepperタブのテンプレートです。
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-3)で参照できます。
 
+<a href='#mokuji'>[:point_up:]</a>
 
 ## <a name='historyToResult'>HistoryからSearchResultへのイベント連携</a>
 
@@ -1096,6 +1152,8 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 それぞれのSubViewの連携をイベントで行うことで部品の再利用が進みます。
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-4)で参照できます。
+
+<a href='#mokuji'>[:point_up:]</a>
 
 ## <a name='tabToOther'>Tabから他のViewへのイベント連携</a>
 
@@ -1197,6 +1255,13 @@ MyApp.Views.History = Backbone.View.extend({
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-5)で参照できます。
 
-## <a name='finish'>仕上げ</a>
+<a href='#mokuji'>[:point_up:]</a>
 
-## <a name='summary'>まとめ</a>
+## <a name='comlpate'>完成</a>
+<a href='#mokuji'>[:point_up:]</a>
+
+## <a name='todo'>TODO</a>
+<a href='#mokuji'>[:point_up:]</a>
+
+
+
