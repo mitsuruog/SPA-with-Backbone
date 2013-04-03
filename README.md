@@ -1290,10 +1290,22 @@ MyApp.Views.History = Backbone.View.extend({
 <a href='#mokuji'>[:point_up:]</a>
 
 ## <a name='comlpate'>完成</a>
+
+実際に動作するものはこちらで確認できます。
+
+_（注意）チュートリアルの内容から少しブラッシュした内容となっています。機能や外観が一致しない場合がありますが、ご了承ください。_
+
+http://mitsuruog.github.com/SPA-with-Backbone
+
 <a href='#mokuji'>[:point_up:]</a>
 
 ## <a name='todo'>TODO</a>
+
+実はまだアプリケーションは完成ではありません。
+
+
 <a href='#mokuji'>[:point_up:]</a>
 
+## ライセンス
 
-
+MIT
