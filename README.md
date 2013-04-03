@@ -144,11 +144,40 @@ PresidentViewはアプリケーションが初期化される際に初期化さ�
 
 本アプリケーションでの、Viewの構成は次のようになります。
 
-<img src="./img/viewPolicy.png">
+<img src="./img/view.png">
 
 <a href='#mokuji'>[:point_up:]</a>
 
 ## <a name='eventManagePolicies'>イベント統治ポリシー</a>
+
+<img src="./img/event.png">
+
+本アプリケーションでは、View間の連携はイベントを起点に行います。イベントは大きくLocalイベントとGlobalイベントの2つに分類します。
+
+Localイベントは、イベントが発生したView内部で処理が完結するイベントです。それに対して、他のViewに対して連携する必要があるものをGlobalイベントとします。
+
+Localイベントのハンドリングについては、Backbone.View内のeventsオブジェト内に定義します。
+
+例）
+````javascript
+events: {
+  'click #btn_search': 'search'
+},
+````
+
+Globalイベントは、Backbone.Eventsを複製したオブジェクト（以下、Mediatorオブジェクト）をアプリケーションにて1つ持ち、Mediatorオブジェクトから発生するイベントをハンドリングします。
+
+例）
+````javascript
+//　Mediatorオブジェクトの複製
+_.extend(MyApp.mediator, Backbone.Events);
+
+//　イベント通知
+App.mediator.trigger('globalChange');
+
+//　イベントハンドリング
+App.mediator.on('globalChange');
+````
 
 <a href='#mokuji'>[:point_up:]</a>
 
