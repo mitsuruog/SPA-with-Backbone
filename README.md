@@ -127,32 +127,29 @@ Gruntの設定については、[Gruntfile.js](https://github.com/mitsuruog/SPA-
 
 ## <a name='viewManagePolicies'>View分割ポリシー</a>
 
-Viewは「ManagerView」と「SubView」の2つに分類し、アプリケーションのトップレベルにあるManagerViewを特別に「PresidentView」と呼びます。
-ManagerViewはSubViewのオブジェクトを保持し、管理するSubViewを外側から制御する責務（Viewの切り替えなど）のみを持ちます。
-それに対して、SubViewは自身が管理するCollectionやModelを持ち、SubView自身を内側から制御する責務（レンダリングなど）や、CollectionやModelとの同期を行う責務を持ちます。
-
-PresidentViewはアプリケーションが初期化される際に初期化され、
-配下のManagerViewやSubViewのオブジェクトを生成し、アプリケーションを構築します。
-また、後で言及するグローバルレベルのイベントを統括します。
-
-| View | 主な責務 | 備考 |
-|:-----------|:------------|:------------|
-| PresidentView| アプリケーションのトップレベル。初期化時に他のViewの初期化||
-| ManagerView| SubViewの管理と外側のみの制御||
-| SubView| CollectionやModelとの同期。SubView内部のみの制御||
-
-
-本アプリケーションでの、Viewの構成は次のようになります。
-
 <img src="./img/view.png">
+
+画面を幾つかのパートに分割しSubViewとします。分割する際のポイントは次の通りです。
+
+1. 画面を構造（ヘッダーフッターなど）で分けてSubViewとする。
+1. （リストなど）繰り返し項目となるものをSubViewとする。
+1. 部分的にコンテンツが置き換わる部分をSubViewとする。
+1. コントローラロジックが複雑になりそうな部分を（予め設計して）SubViewとして分割する。
+
+いくつかのSubViewを管理する中間的なViewが必要な場合は、ManagerViewを作成します。
+
+最後に、アプリケーションのトップレベルに1つ、ManagerViewやSubViewを統括するPresidentViewを作成します。
+
+基本的にBackbone.CollecitionやBackbone.ModelはSubViewが所有し、ManagerViewやPresidentViewでは所有しません。
+これと逆に、ManagerViewやPresidentViewは、管理対象のViewを所有しますが、SubViewは他のViewを所有しません。
 
 <a href='#mokuji'>[:point_up:]</a>
 
-## <a name='eventManagePolicies'>イベント統治ポリシー</a>
+## <a name='eventManagePolicies'>イベント連携ポリシー</a>
 
 <img src="./img/event.png">
 
-本アプリケーションでは、View間の連携はイベントを起点に行います。イベントは大きくLocalイベントとGlobalイベントの2つに分類します。
+View間の連携はイベントを起点に行います。イベントは大きくLocalイベントとGlobalイベントの2つに分類します。
 
 Localイベントは、イベントが発生したView内部で処理が完結するイベントです。それに対して、他のViewに対して連携する必要があるものをGlobalイベントとします。
 
@@ -176,7 +173,7 @@ _.extend(MyApp.mediator, Backbone.Events);
 App.mediator.trigger('globalChange');
 
 //　イベントハンドリング
-App.mediator.on('globalChange');
+App.mediator.on('globalChange', someFunction);
 ````
 
 <a href='#mokuji'>[:point_up:]</a>
