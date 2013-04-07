@@ -19,7 +19,7 @@ MyApp.Views.History = Backbone.View.extend({
 		MyApp.mediator.on('search', this.addHistory);
 		MyApp.mediator.on('changeTab', this.searchCurrentHistory);
 
-		this.searches.on('add remove', this.render);
+		this.listenTo(this.searches, 'add remove', this.render);
 
 	},
 
