@@ -13,7 +13,6 @@
 1. [HistoryからSearchResultへのイベント連携](#historyToResult)
 1. [Tabから他のViewへのイベント連携](#tabToOther)
 1. [完成](#complate)
-1. [TODO](#todo)
  
 ## <a name='intro'>1.はじめに</a>
 
@@ -102,7 +101,7 @@ App root
 ### 使用ライブラリ
 
 以下のライブラリを使用しています。
-`（任意）`となっているライブラリについては、アプリケーションを動かす上で必須ではありませんので、
+（任意）となっているライブラリについては、アプリケーションを動かす上で必須ではありませんので、
 使用しない、または他のライブラリを採用していただいても結構です。
 
 * javascript
@@ -235,9 +234,9 @@ var MyApp = {
 ````
 **js/app.js**
 
-`App`Viewでは、アプリケーションを構築するViewを初期化して保持します。初期化する際に、各Viewが管理を担当するセレクタを渡します。
+`App`では、アプリケーションを構築するSubViewやManagerViewを初期化して保持します。
+このフェーズでは初期化する際に、各Viewが管理を担当するセレクタを渡すのみです。
 
-最後の`new MyApp.App();`はこのアプリケーションを実行するための指示です。
 
 ````javascript
 MyApp.App = Backbone.View.extend({
@@ -300,7 +299,8 @@ MyApp.Views.History = Backbone.View.extend({
 
 **js/views/tabs.js**
 
-`Tabs`Viewでは、管理するSubViewが必要とするパラメータを渡してViewを初期化します。
+`SearchResults`を初期化する際に依存するオブジェクトを渡しています。
+これにより`SearchResults`が持つ機能とデータを分離して、検索Webサービスを追加することを容易にします。
 
 ````javascript
 MyApp.Views.Tabs = Backbone.View.extend({
@@ -328,7 +328,8 @@ MyApp.Views.Tabs = Backbone.View.extend({
 
 **js/views/search_result.js**
 
-`SearchResults`Viewでは、ManagerViewから渡されたテンプレート関数`tmpl`を実行し、管理セレクタ`el`配下にDOMを構築します。
+`Tabs`から渡されたテンプレート関数`tmpl`を実行し、管理セレクタ`el`配下にDOMを構築します。
+
 ````javascript
 MyApp.Views.SearchResults = Backbone.View.extend({
 
@@ -476,12 +477,12 @@ footer {
 
 ## <a name='searchToHistory'>SearchBarからHistoryへのイベント連携</a>
 
-これから説明していく各サブビュー間のイベント連携は、PresidentViewが所有するMediatorオブジェクトを仲介して行います。
+これから説明する異なるView間のイベント連携は、イベト連携ポリシーの通りMediatorオブジェクトを仲介して行います。
 
 まず、SearchBarからHistoryへのイベント連携から説明していきます。
 
-ユーザが検索ボタンをクリックした場合、SearchBarは`click`イベントをハンドリングし、Globalレベルのイベント`search`を発火します。
-Historyでは`search`イベントをハンドリングして、localStorageに検索条件などを記録します。
+ユーザが検索ボタンをクリックした場合、SearchBarは`click`イベントをハンドリングし、Globalのイベント`search`を発火します。
+Historyでは`search`イベントをハンドリングして、localStorageに検索キーワードなどを記録します。
 
 これらを図にしたものが次の図です。
 
@@ -489,13 +490,10 @@ Historyでは`search`イベントをハンドリングして、localStorageに�
 
 **js/app.js**
 
-Globalレベルのイベントを統括するMediatorオブジェクトを作成して保有しておきます。
+Mediatorオブジェクトを作成して保有します。
 
-ここでのポイントは
-
-HistoryViewを初期化する際に、管理させるCollectionオブジェクトを外部から渡すことです。
-外部から管理するオブジェクトを渡すことで、管理する機能（View）と管理対象（Collection）を分離します。
-これ後々、管理対象をLocalStorageからRDBMSなどの置き換えを行う際、Collectionのみの置き換えで実現させるためです。
+`History`を初期化する際に、永続化用のCollectionオブジェクトを渡します。
+これは、永続化方法をLocalStorageからRDBMSなどに容易に置き換えるためです。
 
 ````javascript
 MyApp.App = Backbone.View.extend({
@@ -506,7 +504,7 @@ MyApp.App = Backbone.View.extend({
 
   initialize: function () {
 
-    //Mediator作成
+    //Mediatorオブジェクト作成
     MyApp.mediator = {};
     _.extend(MyApp.mediator, Backbone.Events);
     
@@ -537,7 +535,7 @@ MyApp.Views.SearchBar = Backbone.View.extend({
 
  tmpl: MyApp.Templates.search_bar,
 
- //Localレベルイベントの定義
+ //Localイベントのハンドリング
   events: {
     'click #btn_search': 'search'
   },
@@ -566,32 +564,33 @@ MyApp.Views.SearchBar = Backbone.View.extend({
 
 **js/views/History.js**
 
-Globalレベルのイベント`search`をハンドリングして`addHistory()`を呼び出し、その中でCollectionオブジェクトに検索履歴を1件追加します。
-Collectionオブジェクトは内部でLocalStorageと自動的に同期します。
+Globalのイベント`search`をハンドリングして`addHistory()`を呼び出し、
+その中でCollectionに検索キーワードなどを1件追加します。
+Collectionは内部でLocalStorageと自動的に同期しています。
 
 Collectionを追加すると`add`イベントが発火するので、これをハンドリングして`render()`を呼び出し、画面に描画を行います。
 
-ちなみに、検索履歴の削除ボタンをクリックした際に、LocalStorageから履歴を削除する実装も行っています。
-Localレベルのイベントを、SubView自身で処理する際の参考実装としてください。
-
-ここでのポイントは
-
-まず、`initialize()`での`_.bindAll(this)`です。
-今回のように、Mediatorオブジェクトを介したイベント駆動型で実装した場合、javascript特有のthisの喪失が多発します。
+ここでは、`initialize()`で`_.bindAll(this)`を行っています。
+これは、異なるViewの連携をMediatorオブジェクトを介したイベント駆動型で実装した場合、javascript特有のthisの喪失が多発します。
 _.bindAllすることで、常にthisはViewオブジェクトを指し示します。
 
-2つめは、イベントハンドリングからレンダリング`render()`までの処理の流れです。
-これは、`ハンドリング→（レンダリング・データの更新）`の順ではなく、`ハンドリング→データの更新→レンダリング`となっている点で、
-基本的にイベントが起点となって各処理が実行されるようになっています。
-ハンドリング、データの更新、レンダリングの各処理をイベントで疎結合にすることで、
+また、ユーザの操作からレンダリング`render()`までの処理の流れについては、
+一貫して、`ユーザの操作→Collection（またはModel）の更新→レンダリング`の順で処理を行います。
+これは、ユーザの操作とレンダリングの間に、Collection（またはModel）の更新を挟むことによって、
+ユーザの操作とレンダリングが1つにまとまったスパゲティfunctionの作成を防止するためです。
+
+ユーザの操作、Collection（またはModel）の更新、レンダリングの各処理を疎結合にすることで、
 それぞれ依存することなく単独でテストしやすくなります。
+
+_検索履歴の削除ボタンをクリックした際に、LocalStorageから履歴を削除する実装を行っています。
+Localイベントを、View自身で処理する際の実装の参考としてください。_
 
 ````javascript
 MyApp.Views.History = Backbone.View.extend({
 
   tmpl: MyApp.Templates.history,
 
-  //Localレベルイベントの定義
+  //Localイベントのハンドリング
   events: {
     'click .btn_delete': 'removeHistory'
   },
@@ -605,11 +604,11 @@ MyApp.Views.History = Backbone.View.extend({
     this.searches.fetch();
     this.render();
   
-    //Globalレベルイベントをバインド
+    //Globalイベントをハンドリング
     MyApp.mediator.on('search', this.addHistory);
 
-    //Localレベルイベントをバインド
-    this.searches.on('add remove', this.render);
+    //Localイベントをハンドリング
+    this.listenTo(this.searches, 'add remove', this.render);
 
   },
 
