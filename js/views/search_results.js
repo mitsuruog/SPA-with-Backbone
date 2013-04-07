@@ -11,7 +11,7 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 		MyApp.mediator.on('search:' + this.service, this.search);
 		MyApp.mediator.on('historySearch:' + this.service, this.search);
 
-		this.collections.on('reset', this.render);
+		this.listenTo(this.collections, 'reset', this.render);
 		
 	},
 	
