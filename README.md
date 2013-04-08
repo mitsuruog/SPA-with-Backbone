@@ -977,10 +977,11 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 
 Collectionでは実際のWebAPIを使用するための様々な情報を定義します。
 
-Twitterの検索APIでは`response.results`にtweetのArrayが格納されています。
+Twitterの検索APIでは`response.results`にtweetの配列が格納されています。
 取得したJSONが（ネストしている場合など）そのままではCollectionとして利用できない場合、
 `parse()`にてJSONオブジェトから必要な部分を抜き出し、後方のメソッドに渡します。
-Viewで同様のことを行う実装を時々見かけますが、ロジックが分散してしまうのであまりお勧めしません。
+
+_時々、Viewで同じような行う実装を見かけますが、ロジックが分散してしまうのであまりお勧めしません。_
 
 
 ````javascript
@@ -1082,145 +1083,145 @@ TwitterとHotpepperタブのテンプレートです。
 
 <a href='#mokuji'>[:point_up:]</a>
 
-## <a name='historyToResult'>HistoryからSearchResultへのイベント連携</a>
+## <a name='historyToResult'>HistoryからSearchResultsへのイベント連携</a>
 
-続いて、HistoryからSearchResultへのイベント連携部分について説明していきます。
+続いて、HistoryからSearchResultsへのイベント連携部分について説明していきます。
 
-HistoryViewにて検索履歴をクリックしたした際に、Globalイベント`historySearch`と`historySearch:serviceName`を発火します。
-TabsViewでは`historySearch`を、SearchResultsViewでは`historySearch:serviceName`をハンドリングしてそれぞれ処理を行います。
-処理はSearchBarからSearchResultへのイベント連携で作成したものをそのまま流用します。
+Historyにて検索履歴をクリックしたした際に、Globalイベント`historySearch`と`historySearch:{{サービス名}}`を発火します。
+Tabsでは`historySearch`を、SearchResultsでは`historySearch:serviceName`をハンドリングしてそれぞれ処理を行います。
+処理はSearchBarからSearchResultsへのイベント連携で作成したものをそのまま流用します。
 
 <img src="./img/phase-4_event.png">
 
 **js/views/history.js**
 
-検索履歴の`click`イベントを監視して、`historySearch`と`historySearch:serviceName`を発火させます。
+検索履歴の`click`イベントを監視して、`historySearch`と`historySearch:{{サービス名}}`を発火させます。
 
 ````javascript
 MyApp.Views.History = Backbone.View.extend({
 
-	tmpl: MyApp.Templates.history,
+  tmpl: MyApp.Templates.history,
 
-	events: {
-		'click .btn_delete': 'removeHistory',
-		
-		//履歴クリック時のLocalイベントを監視して、searchHistory()を呼び出す
-		'click .history_contents': 'searchHistory'
-	},
+  events: {
+    'click .btn_delete': 'removeHistory',
+    
+    //履歴クリック時のLocalイベントを監視して、searchHistory()を呼び出す
+    'click .history_contents': 'searchHistory'
+  },
 
-	// some ...
-	
-	searchHistory: function(e){
-	
-		var history = this._getHistory(e);
-		
-		//Globalイベント「historySearch」を発火する
-		MyApp.mediator.trigger('historySearch', history);
-		MyApp.mediator.trigger('historySearch:' + history.service, history);	
-	},
-	
-	// some ...
+  // some ...
+  
+  searchHistory: function(e){
+  
+    var history = this._getHistory(e);
+    
+    //Globalイベント「historySearch」を発火する
+    MyApp.mediator.trigger('historySearch', history);
+    MyApp.mediator.trigger('historySearch:' + history.service, history);  
+  },
+  
+  // some ...
 
 });
 ````
 
 **js/views/tabs.js**
 
-Globalイベント`historySearch`を監視します。
+Globalイベント`historySearch`をハンドリングして`selectTab()`を呼び出します。
 
 ````javascript
 MyApp.Views.Tabs = Backbone.View.extend({
 
-	tmpl: MyApp.Templates.tabs,
+  tmpl: MyApp.Templates.tabs,
 
-	initialize: function () {
+  initialize: function () {
 
-		// some ...
-		
-		//履歴クリック時のGlobalイベントを監視して、selectTab()を呼び出す
-		MyApp.mediator.on('search historySearch', this.selectTab);
+    // some ...
+    
+    //履歴クリック時のGlobalイベントを監視して、selectTab()を呼び出す
+    MyApp.mediator.on('search historySearch', this.selectTab);
 
-	},
-	
-	// some ...
+  },
+  
+  // some ...
 
 });
 ````
 
 **js/views/search_results.js**
 
-Globalイベント`historySearch:serviceName`を監視します。
+Globalイベント`historySearch:{{サービス名}}`をハンドリングして`search()`を呼び出します。
 
 ````javascript
 MyApp.Views.SearchResults = Backbone.View.extend({
 
-	initialize: function () {
-		
-		// some ...
-		
-		MyApp.mediator.on('search:' + this.service, this.search);
-		
-		//履歴クリック時のGlobalイベントを監視して、search()を呼び出す
-		MyApp.mediator.on('historySearch:' + this.service, this.search);
+  initialize: function () {
+    
+    // some ...
+    
+    MyApp.mediator.on('search:' + this.service, this.search);
+    
+    //履歴クリック時のGlobalイベントをハンドリングして、search()を呼び出す
+    MyApp.mediator.on('historySearch:' + this.service, this.search);
 
-		this.collections.on('reset', this.render);
-		
-	},
-	
-	// some ...
-	
+    this.listenTo(this.collections, 'reset', this.render);
+    
+  },
+  
+  // some ...
+  
 ````
 
 これで、検索履歴から再検索できるようになりました。
 
-それぞれのSubViewの連携をイベントで行うことで部品の再利用が進みます。
+それぞれのViewの連携をイベントで行うことで部品の再利用が進みます。
 
 ソースコード一式は[こちらのブランチ](https://github.com/mitsuruog/SPA-with-Backbone/tree/phase-4)で参照できます。
 
 <a href='#mokuji'>[:point_up:]</a>
 
-## <a name='tabToOther'>Tabから他のViewへのイベント連携</a>
+## <a name='tabToOther'>Tabsから他のViewへのイベント連携</a>
 
-最後は、Tabから他のViewへのイベント連携の部分を説明していきます。
+最後は、Tabsから他のViewへのイベント連携の部分を説明していきます。
 
 タブをクリックした際にGlobalイベント`changeTab`を発火します。
-HistoryViewでは`changeTab`を監視し、検索履歴のCollection内から該当するサービスの最も直近に検索したキーワードを探し出します。
-その後は、HistoryからSearchResultへのイベント連携部分をそのまま使います。
+Historyでは`changeTab`をハンドリングし、検索履歴のCollection内から該当するサービスの最も直近に検索したキーワードを探し出します。
+その後は、HistoryからSearchResultsへのイベント連携部分をそのまま使います。
 
 <img src="./img/phase-5_event.png">
 
 **js/views/tabs.js**
 
-タブの`click`イベントを監視して、Globalイベント`changeTab`を発火します。
+タブの`click`イベントをハンドリングして、Globalイベント`changeTab`を発火します。
 
 ````javascript
 MyApp.Views.Tabs = Backbone.View.extend({
 
-	tmpl: MyApp.Templates.tabs,
+  tmpl: MyApp.Templates.tabs,
 
-	//Tabクリック時のLocalイベントを監視して、changeTab()を呼び出す
-	events: {
-		'click #tab>li': 'changeTab'
-	},
+  //Tabクリック時のLocalイベントをハンドリングして、changeTab()を呼び出す
+  events: {
+    'click #tab>li': 'changeTab'
+  },
 
-	// some ..
+  // some ..
 
-	changeTab: function (e) {
+  changeTab: function (e) {
 
-		var service = this._getService(e.currentTarget);
-		
-		//Globalイベント「changeTab」を発火する
-		MyApp.mediator.trigger('changeTab', service);
+    var service = this._getService(e.currentTarget);
+    
+    //Globalイベント「changeTab」を発火する
+    MyApp.mediator.trigger('changeTab', service);
 
-	},
-	
-	// some ...
+  },
+  
+  // some ...
 
-	_getService: function (tab) {
+  _getService: function (tab) {
 
-		return $(tab).data('service');
+    return $(tab).data('service');
 
-	}
+  }
 
 });
 
@@ -1228,49 +1229,49 @@ MyApp.Views.Tabs = Backbone.View.extend({
 
 **js/views/tabs.js**
 
-Globalイベント`chnageTab`を監視して、直近の検索のキーワードと共に、
-Globalイベント`historySearch`と`historySearch:serviceName`を発火します。
+Globalイベント`chnageTab`をハンドリングして、直近の検索のキーワードと共に、
+Globalイベント`historySearch`と`historySearch:{{サービス名}}`を発火します。
 
 ````javascript
 MyApp.Views.History = Backbone.View.extend({
 
-	// some ...
+  // some ...
 
-	initialize: function () {
+  initialize: function () {
 
-		// some ...
+    // some ...
 
-		//Tabクリック時のLocalイベントを監視して、searchCurrentHistory()を呼び出す
-		MyApp.mediator.on('changeTab', this.searchCurrentHistory);
+    //Tabクリック時のLocalイベントをハンドリングして、searchCurrentHistory()を呼び出す
+    MyApp.mediator.on('changeTab', this.searchCurrentHistory);
 
-		this.searches.on('add remove', this.render);
+    this.listenTo(this.searches, 'add remove', this.render);
 
-	},
-	
-	// some ...
+  },
+  
+  // some ...
 
-	searchCurrentHistory: function (service) {
+  searchCurrentHistory: function (service) {
 
-		var historys = [],
-			history;
+    var historys = [],
+      history;
 
-		historys = this.searches.where({
-			service: service
-		});
-		
-		if (historys.length) {
+    historys = this.searches.where({
+      service: service
+    });
+    
+    if (historys.length) {
 
-			history = historys[0].attributes;
-			
-			//Globalイベント「historySearch」を発火する
-			MyApp.mediator.trigger('historySearch', history);
-			MyApp.mediator.trigger('historySearch:' + history.service, history);
+      history = historys[0].attributes;
+      
+      //Globalイベント「historySearch」を発火する
+      MyApp.mediator.trigger('historySearch', history);
+      MyApp.mediator.trigger('historySearch:' + history.service, history);
 
-		}
+    }
 
-	},
-	
-	// some ...
+  },
+  
+  // some ...
 
 });
 ````
@@ -1288,13 +1289,6 @@ MyApp.Views.History = Backbone.View.extend({
 _（注意）チュートリアルの内容から少しブラッシュした内容となっています。機能や外観が一致しない場合がありますが、ご了承ください。_
 
 http://mitsuruog.github.com/SPA-with-Backbone
-
-<a href='#mokuji'>[:point_up:]</a>
-
-## <a name='todo'>TODO</a>
-
-実はまだアプリケーションは完成ではありません。
-
 
 <a href='#mokuji'>[:point_up:]</a>
 
