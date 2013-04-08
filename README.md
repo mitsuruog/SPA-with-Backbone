@@ -1,5 +1,8 @@
+<img src="http://backbonejs.org/docs/images/backbone.png" alt="Backbone.js" style="width:600px;"/>
+
 # Backbone.jsでSingle page アプリケーションを作る方法
 ### How to build single page application with Backbone.js
+
 
 =================
 ## <a name='mokuji'>目次</a>
