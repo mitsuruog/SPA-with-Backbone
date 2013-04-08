@@ -9,8 +9,8 @@
 1. [イベント連携ポリシー](#eventManagePolicies)
 1. [ワイアーフレーム作成](#makeWireframe)
 1. [SearchBarからHistoryへのイベント連携](#searchToHistory)
-1. [SearchBarからSearchResultへのイベント連携](#searchToResult)
-1. [HistoryからSearchResultへのイベント連携](#historyToResult)
+1. [SearchBarからSearchResultsへのイベント連携](#searchToResult)
+1. [HistoryからSearchResultsへのイベント連携](#historyToResult)
 1. [Tabから他のViewへのイベント連携](#tabToOther)
 1. [完成](#complate)
  
@@ -479,10 +479,10 @@ footer {
 
 これから説明する異なるView間のイベント連携は、イベト連携ポリシーの通りMediatorオブジェクトを仲介して行います。
 
-まず、SearchBarからHistoryへのイベント連携から説明していきます。
+まず、`SearchBar`から`History`へのイベント連携から説明していきます。
 
-ユーザが検索ボタンをクリックした場合、SearchBarは`click`イベントをハンドリングし、Globalイベント`search`を発火します。
-Historyでは`search`イベントをハンドリングして、localStorageに検索キーワードなどを記録します。
+ユーザが検索ボタンをクリックした場合、`SearchBar`は`click`イベントをハンドリングし、Globalイベント`search`を発火します。
+`History`では`search`イベントをハンドリングして、localStorageに検索キーワードなどを記録します。
 
 これらを図にしたものが次の図です。
 
@@ -840,16 +840,16 @@ ol {
 
 <a href='#mokuji'>[:point_up:]</a>
 
-## <a name='searchToResult'>SearchBarからSearchResultへのイベント連携</a>
+## <a name='searchToResult'>SearchBarからSearchResultsへのイベント連携</a>
 
-このパートでは、SearchBarからSearchResultへの連携について説明します。
+このパートでは、`SearchBar`から`SearchResults`への連携について説明します。
 
 _Hotpepperの検索サービスも実装していますが、冗長なので今回はTwitterに絞って説明します。ご了承ください。_
 
 検索ボタンをクリックした際に`search:{{サービス名}}`イベントを新たに発火するようにします。
-このイベントはSearchResultsにてハンドリングし、WebAPIを呼び出して結果をレンダリング処理を行います。
+このイベントは`SearchResults`にてハンドリングし、WebAPIを呼び出して結果をレンダリング処理を行います。
 
-TabsViewでは、前のパートで発火した`search`イベントをハンドリングして、タブの表示制御を行います。
+`Tabs`では、前のパートで発火した`search`イベントをハンドリングして、タブの表示制御を行います。
 
 これらの流れを図にしたものが以下の図です。
 
@@ -879,9 +879,9 @@ MyApp.Views.SearchBar = Backbone.View.extend({
 
 **js/views/tabs.js**
 
-配下のSearchResultsを作成して保有しておきます。
-SearchResultsを初期化する際に、依存するオブジェクトを引数で渡します。
-これにより、SearchResultsの内部実装を変えることなく、検索サービスを増やすことが出来ます。
+配下の`SearchResults`を作成して保有しておきます。
+`SearchResults`を初期化する際に、依存するオブジェクトを引数で渡します。
+これにより、`SearchResults`の内部実装を変えることなく、検索サービスを増やすことが出来ます。
 
 ここでは、Globalレベルの`search`イベントをハンドリングして`selectTab()`にてタブ表示の切り替えを行います。
 
@@ -929,12 +929,12 @@ MyApp.Views.Tabs = Backbone.View.extend({
 **js/views/search_results.js**
 
 Globalイベントの`search:{{サービス名}}`イベントをハンドリングして`search()`を呼び出します。
-`search()`はSearchResults内のCollection共通インターフェースを抽象化したもので、
+`search()`は`SearchResults`内のCollection共通インターフェースを抽象化したもので、
 実際の処理は各Collectionの`search()`にて記述します。
 
 `search()`の内部ではWebAPIを呼び出して結果をCollectionに格納します。その際に`reset`イベントが発火されるので、
 これをハンドリングして`render()`を呼び出しレンダリングします。
-レンダリングする際のテンプレートは上位のTabsから渡されます。
+レンダリングする際のテンプレートは上位の`Tabs`から渡されます。
 
 ````javascript
 MyApp.Views.SearchResults = Backbone.View.extend({
@@ -1085,11 +1085,11 @@ TwitterとHotpepperタブのテンプレートです。
 
 ## <a name='historyToResult'>HistoryからSearchResultsへのイベント連携</a>
 
-続いて、HistoryからSearchResultsへのイベント連携部分について説明していきます。
+続いて、`History`から`SearchResults`へのイベント連携部分について説明していきます。
 
-Historyにて検索履歴をクリックしたした際に、Globalイベント`historySearch`と`historySearch:{{サービス名}}`を発火します。
-Tabsでは`historySearch`を、SearchResultsでは`historySearch:serviceName`をハンドリングしてそれぞれ処理を行います。
-処理はSearchBarからSearchResultsへのイベント連携で作成したものをそのまま流用します。
+`History`にて検索履歴をクリックしたした際に、Globalイベント`historySearch`と`historySearch:{{サービス名}}`を発火します。
+`Tabs`では`historySearch`を、`SearchResults`では`historySearch:serviceName`をハンドリングしてそれぞれ処理を行います。
+処理は`SearchBar`から`SearchResults`へのイベント連携で作成したものをそのまま流用します。
 
 <img src="./img/phase-4_event.png">
 
@@ -1182,11 +1182,11 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 
 ## <a name='tabToOther'>Tabsから他のViewへのイベント連携</a>
 
-最後は、Tabsから他のViewへのイベント連携の部分を説明していきます。
+最後は、`Tabs`から他のViewへのイベント連携の部分を説明していきます。
 
 タブをクリックした際にGlobalイベント`changeTab`を発火します。
-Historyでは`changeTab`をハンドリングし、検索履歴のCollection内から該当するサービスの最も直近に検索したキーワードを探し出します。
-その後は、HistoryからSearchResultsへのイベント連携部分をそのまま使います。
+`History`では`changeTab`をハンドリングし、検索履歴のCollection内から該当するサービスの最も直近に検索したキーワードを探し出します。
+その後は、`History`から`SearchResults`へのイベント連携部分をそのまま使います。
 
 <img src="./img/phase-5_event.png">
 
