@@ -481,7 +481,7 @@ footer {
 
 まず、SearchBarからHistoryへのイベント連携から説明していきます。
 
-ユーザが検索ボタンをクリックした場合、SearchBarは`click`イベントをハンドリングし、Globalのイベント`search`を発火します。
+ユーザが検索ボタンをクリックした場合、SearchBarは`click`イベントをハンドリングし、Globalイベント`search`を発火します。
 Historyでは`search`イベントをハンドリングして、localStorageに検索キーワードなどを記録します。
 
 これらを図にしたものが次の図です。
@@ -493,7 +493,7 @@ Historyでは`search`イベントをハンドリングして、localStorageに�
 Mediatorオブジェクトを作成して保有します。
 
 `History`を初期化する際に、永続化用のCollectionオブジェクトを渡します。
-これは、永続化方法をLocalStorageからRDBMSなどに容易に置き換えるためです。
+これは、後々永続化方法をLocalStorageからRDBMSなどに容易に置き換える必要が出た場合、容易に置き換えるためです。
 
 ````javascript
 MyApp.App = Backbone.View.extend({
@@ -572,7 +572,7 @@ Collectionを追加すると`add`イベントが発火するので、これを�
 
 ここでは、`initialize()`で`_.bindAll(this)`を行っています。
 これは、異なるViewの連携をMediatorオブジェクトを介したイベント駆動型で実装した場合、javascript特有のthisの喪失が多発します。
-_.bindAllすることで、常にthisはViewオブジェクトを指し示します。
+_.bindAll()することで、常にthisはViewオブジェクトを指し示します。
 
 また、ユーザの操作からレンダリング`render()`までの処理の流れについては、
 一貫して、`ユーザの操作→Collection（またはModel）の更新→レンダリング`の順で処理を行います。
@@ -842,13 +842,14 @@ ol {
 
 ## <a name='searchToResult'>SearchBarからSearchResultへのイベント連携</a>
 
-前のパートでは、SearchBarからHistoryまでのイベント連携について説明しました。
 このパートでは、SearchBarからSearchResultへの連携について説明します。
-_実際のアプリケーションではHotpepperの検索サービスも実装していますが、冗長なので今回はTwitterに絞って説明します。_
 
-検索ボタンをクリックした際に新たに`search:serviceName`イベントを発火します。
-TabsViewとSearchResultsViewにてハンドリングしてそれぞれ処理を行います。
-TabsViewでは、タブの表示制御を行います。SearchResultsViewではWebAPIを呼び出して結果をレンダリングします。
+_Hotpepperの検索サービスも実装していますが、冗長なので今回はTwitterに絞って説明します。ご了承ください。_
+
+検索ボタンをクリックした際に`search:{{サービス名}}`イベントを新たに発火するようにします。
+このイベントはSearchResultsにてハンドリングし、WebAPIを呼び出して結果をレンダリング処理を行います。
+
+TabsViewでは、前のパートで発火した`search`イベントをハンドリングして、タブの表示制御を行います。
 
 これらの流れを図にしたものが以下の図です。
 
@@ -856,7 +857,7 @@ TabsViewでは、タブの表示制御を行います。SearchResultsViewではW
 
 **js/views/search_bar.js**
 
-新たに`search:serviceName`イベントを発火します。
+新たに`search:{{サービス名}}`イベントを発火します。
 
 ````javascript
 MyApp.Views.SearchBar = Backbone.View.extend({
@@ -867,7 +868,7 @@ MyApp.Views.SearchBar = Backbone.View.extend({
 
     // some...
 
-    //「search」「search:イベント名」イベントを発火する
+    //「search」「search:{{サービス名}}」イベントを発火する
     MyApp.mediator.trigger('search', search);
     MyApp.mediator.trigger('search:' + service, search);
 
@@ -878,13 +879,11 @@ MyApp.Views.SearchBar = Backbone.View.extend({
 
 **js/views/tabs.js**
 
-ManagerViewです。管理するSubViewを作成して保有しておきます。
-Globalレベルの`search`イベントをハンドリングして`selectTab()`にてタブ表示の切り替えを行います。
+配下のSearchResultsを作成して保有しておきます。
+SearchResultsを初期化する際に、依存するオブジェクトを引数で渡します。
+これにより、SearchResultsの内部実装を変えることなく、検索サービスを増やすことが出来ます。
 
-ここでのポイントは
-
-SubViewを初期化する際に、SubViewの管理対象を外部から渡たすことです。
-これにより、SearchResultsViewの内部実装を変えることなく、検索サービスを増やすことが出来ます。
+ここでは、Globalレベルの`search`イベントをハンドリングして`selectTab()`にてタブ表示の切り替えを行います。
 
 ````javascript
 MyApp.Views.Tabs = Backbone.View.extend({
@@ -913,7 +912,7 @@ MyApp.Views.Tabs = Backbone.View.extend({
       
     });
     
-    //Globalレベルイベントをバインド
+    //Globalイベントをハンドリング
     MyApp.mediator.on('search', this.selectTab);
 
   },
@@ -929,17 +928,13 @@ MyApp.Views.Tabs = Backbone.View.extend({
 
 **js/views/search_results.js**
 
-Globalイベントの`search:serviceName`イベントをハンドリングして`search()`を呼び出します。
-`search()`はこのViewが持つCollectionの共通インターフェースで、実際の処理は各Collectionの`search()`にて記述します。
+Globalイベントの`search:{{サービス名}}`イベントをハンドリングして`search()`を呼び出します。
+`search()`はSearchResults内のCollection共通インターフェースを抽象化したもので、
+実際の処理は各Collectionの`search()`にて記述します。
 
 `search()`の内部ではWebAPIを呼び出して結果をCollectionに格納します。その際に`reset`イベントが発火されるので、
 これをハンドリングして`render()`を呼び出しレンダリングします。
-レンダリングする際のテンプレートはManagerViewから渡されます。
-
-ここでのポイントは
-
-SubViewは出来る限り機能を抽象化して、必要なものはView生成時に外部から渡すことです。
-これによりSubViewが再利用できます。
+レンダリングする際のテンプレートは上位のTabsから渡されます。
 
 ````javascript
 MyApp.Views.SearchResults = Backbone.View.extend({
@@ -952,11 +947,11 @@ MyApp.Views.SearchResults = Backbone.View.extend({
     this.tmpl = this.options.tmpl;
     this.service = this.options.service;
 
-    //Globalレベルイベントをバインド
+    //Globalイベントをハンドリング
     MyApp.mediator.on('search:' + this.service, this.search);
 
-    //Localレベルイベントをバインド
-    this.collections.on('reset', this.render);
+    //Localイベントをハンドリング
+    this.listenTo(this.collections, 'reset', this.render);
     
   },
   
@@ -980,15 +975,13 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 
 **js/collections/twitter_list.js**
 
-Collectionでは実際のWebAPIにFetchするための情報を定義します。
+Collectionでは実際のWebAPIを使用するための様々な情報を定義します。
 
-ここでのポイントは
-
-WebAPIから取得したJSONが（ネストしている場合など）そのままではCollectionとして利用できない場合、
-`parse()`にてJSONオブジェトから必要な部分を抜き出し、後方のメソッドに渡しているところです。
+Twitterの検索APIでは`response.results`にtweetのArrayが格納されています。
+取得したJSONが（ネストしている場合など）そのままではCollectionとして利用できない場合、
+`parse()`にてJSONオブジェトから必要な部分を抜き出し、後方のメソッドに渡します。
 Viewで同様のことを行う実装を時々見かけますが、ロジックが分散してしまうのであまりお勧めしません。
 
-下の例では`response.results`にtweetのArrayが格納されています。
 
 ````javascript
 MyApp.Collections.TwitterList = Backbone.Collection.extend({
