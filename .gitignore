@@ -1,4 +1,5 @@
 /* for Cloud9 */
 .c9revisions/
+.idea
 
 node_modules
