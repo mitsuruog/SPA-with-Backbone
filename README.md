@@ -19,6 +19,12 @@
 
 ## <a name='intro'>1.はじめに</a>
 
+
+** 一部動作しないコードがあります。ご理解の上利用してください。 **
+詳細はこちらのBlog記事で紹介されています。利用するまえに一読することをオススメします。
+[Backbone.js入門 – 初学者の為のロードマップ@mawatari](http://mawatari.jp/archives/roadmap-for-backbonejs-beginners#step-4)
+
+
 このチュートリアルでは、最近話題のクライアントサイドMVCフレームワークのひとつ[Backbone.js](http://backbonejs.org/)を使って、
 Gmailのようなシングルページで動作するWebアプリケーションの作成方法について紹介します。
 
@@ -37,7 +43,7 @@ TwitterなどのWebAPIに対して検索条件を指定して検索結果を表�
 
 画面のイメージは次の通りで、5つのViewで分割しています。（分割ポリシーについては後述します。）
 
-<img src=./img/wireframe.png">
+<img src="./img/wireframe.png">
 
 画面の次のような機能があるとします。
 
