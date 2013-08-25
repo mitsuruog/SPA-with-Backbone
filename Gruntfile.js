@@ -4,10 +4,10 @@ module.exports = function (grunt) {
 
 		jshint: {
 			all: ['Gruntfile.js',
-					'js/*.js',
-					'js/models/**/*.js',
-					'js/collections/**/*.js',
-					'js/views/**/*.js']
+				'js/*.js',
+				'js/models/**/*.js',
+				'js/collections/**/*.js',
+				'js/views/**/*.js']
 		},
 		watch: {
 			scripts: {
@@ -21,20 +21,12 @@ module.exports = function (grunt) {
 			handlebars: {
 				files: ['hbs/**/*.hbs'],
 				tasks: ['handlebars']
+			},
+			md: {
+				files: ['docs/**/*.md'],
+				tasks: ['concat:md']
 			}
 		},
-//		yuidoc: {
-//			compile: {
-//				name: 'spa-with-backbone',
-//				description: 'Single page application build with Backbone.js',
-//				version: '0.1.0',
-//				url: 'https://github.com/mitsuruog/SPA-with-Backbone',
-//				options: {
-//					paths: 'js',
-//					outdir: 'docs'
-//				}
-//			}
-//		},
 		stylus: {
 			options: {
 				compress: false
@@ -58,15 +50,27 @@ module.exports = function (grunt) {
 					"js/templates/layout.js": "hbs/*.hbs"
 				}
 			}
+		},
+		concat: {
+			md: {
+				options: {
+					separator: '\r\n\r\n',
+					process: function(src, filepath) {
+						return src.replace(/..\/img/gi, './img');
+					}
+				},
+				src: ['docs/**/*.md'],
+				dest: 'README.md'
+			}
 		}
 	});
 
 	// Load the plugin.
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-contrib-yuidoc');
 	grunt.loadNpmTasks('grunt-contrib-stylus');
 	grunt.loadNpmTasks('grunt-contrib-handlebars');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 
 	// Default task(s).
 	grunt.registerTask('default', ['watch']);
