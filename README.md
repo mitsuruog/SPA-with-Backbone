@@ -16,7 +16,7 @@
 1. [HistoryからSearchResultsへのイベント連携](#historyToResult)
 1. [Tabから他のViewへのイベント連携](#tabToOther)
 1. [完成](#complate)
- 
+
 ## <a name='intro'>1.はじめに</a>
 
 このチュートリアルでは、最近話題のクライアントサイドMVCフレームワークのひとつ[Backbone.js](http://backbonejs.org/)を使って、
@@ -37,7 +37,7 @@ TwitterなどのWebAPIに対して検索条件を指定して検索結果を表�
 
 画面のイメージは次の通りで、5つのViewで分割しています。（分割ポリシーについては後述します。）
 
-<img src="./img/wireframe.png">
+<img src=./img/wireframe.png">
 
 画面の次のような機能があるとします。
 
@@ -59,15 +59,15 @@ TwitterなどのWebAPIに対して検索条件を指定して検索結果を表�
 App root
 │
 │  index.html
-│  
+│
 ├─assets
-│          
+│
 ├─css
 │  │  main.css
 │  └─styl
 │          color_thema.styl
 │          main.styl
-│          
+│
 ├─hbs
 │      footer.hbs
 │      history.hbs
@@ -76,23 +76,23 @@ App root
 │      search_bar.hbs
 │      tabs.hbs
 │      twitter.hbs
-│      
+│
 └─js
    │  app.js
    │  namespace.js
-   │  
+   │
    ├─collections
    │      hotpepper_list.js
    │      search_history_list.js
    │      twitter_list.js
-   │      
+   │
    ├─models
    │      hotpepper.js
    │      twitter.js
-   │      
+   │
    ├─templates
    │      layout.js
-   │      
+   │
    └─views
            footer.js
            history.js
@@ -124,8 +124,6 @@ App root
 > このチュートリアルでは、handlebarsとstylusを使用しています。これらはGrunt.jsを使ってビルドしていますが、このチュートリアルでは詳しく説明しません。
 Gruntの設定については、[Gruntfile.js](https://github.com/mitsuruog/SPA-with-Backbone/blob/master/Gruntfile.js)または、
 [package.json](https://github.com/mitsuruog/SPA-with-Backbone/blob/master/package.json)を参考にしてください。
-
-<a href='#mokuji'>[:point_up:]</a>
 
 ## <a name='viewManagePolicies'>View分割ポリシー</a>
 
@@ -204,7 +202,7 @@ App.mediator.on('globalChange', someFunction);
   <a href="https://github.com/mitsuruog/SPA-with-Backbone.git"><img style="position: fixed; top: 0; right: 0; border: 0;z-index: 999;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
   <!--app root  -->
   <div id="app"></div>
-  
+
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -212,7 +210,7 @@ App.mediator.on('globalChange', someFunction);
   <script type="text/javascript" src="assets/js/underscore-1.4.4.js"></script>
   <script type="text/javascript" src="assets/js/backbone-0.9.10.js"></script>
   <script type="text/javascript" src="assets/js/handlebars-1.0.0-rc.3.js"></script>
- 
+
   <script type="text/javascript" src="js/namespace.js"></script>
   <script type="text/javascript" src="js/templates/layout.js"></script>
   <script type="text/javascript" src="js/views/search_bar.js"></script>
@@ -220,8 +218,8 @@ App.mediator.on('globalChange', someFunction);
   <script type="text/javascript" src="js/views/search_results.js"></script>
   <script type="text/javascript" src="js/views/history.js"></script>
   <script type="text/javascript" src="js/views/footer.js"></script>
-  <script type="text/javascript" src="js/app.js"></script> 
- 
+  <script type="text/javascript" src="js/app.js"></script>
+
 </body>
 </html>
 ````
@@ -311,7 +309,7 @@ MyApp.Views.Tabs = Backbone.View.extend({
  tmpl: MyApp.Templates.tabs,
 
   initialize: function () {
-    
+
     this.$el.html(this.tmpl());
 
     this.twitters = new MyApp.Views.SearchResults({
@@ -496,7 +494,7 @@ footer {
 Mediatorオブジェクトを作成して保有します。
 
 `History`を初期化する際に、永続化用のCollectionオブジェクトを渡します。
-これは、後々永続化方法をLocalStorageからRDBMSなどに容易に置き換える必要が出た場合、容易に置き換えるためです。
+これは、後々永続化方法をLocalStorageからRDBMSなどに置き換える必要が出た場合、容易に置き換えるためです。
 
 ````javascript
 MyApp.App = Backbone.View.extend({
@@ -510,7 +508,7 @@ MyApp.App = Backbone.View.extend({
     //Mediatorオブジェクト作成
     MyApp.mediator = {};
     _.extend(MyApp.mediator, Backbone.Events);
-    
+
     this.$el.html(this.tmpl());
 
     this.history = new MyApp.Views.History({
@@ -606,7 +604,7 @@ MyApp.Views.History = Backbone.View.extend({
 
     this.searches.fetch();
     this.render();
-  
+
     //Globalイベントをハンドリング
     MyApp.mediator.on('search', this.addHistory);
 
@@ -636,7 +634,7 @@ MyApp.Views.History = Backbone.View.extend({
     }));
 
   },
-  
+
   _getHistory: function (e) {
 
     var history = {},
@@ -659,9 +657,9 @@ Collectionの中身はLocalStorageに記録するユニークなキーを設定�
 
 ````javascript
 MyApp.Collections.SearchHistoryList = Backbone.Collection.extend({
-  
+
  localStorage: new Backbone.LocalStorage('mitsuruog_SPA_searchHistory')
-  
+
 });
 ````
 
@@ -894,36 +892,36 @@ MyApp.Views.Tabs = Backbone.View.extend({
  tmpl: MyApp.Templates.tabs,
 
   initialize: function () {
-    
+
     this.$el.html(this.tmpl());
 
     this.twitters = new MyApp.Views.SearchResults({
-      
+
       el: this.$el.find('#twitter_list'),
       tmpl: MyApp.Templates.twitter,
       collections: new MyApp.Collections.TwitterList(),
       service: 'twitter'
-      
+
     });
 
     this.hotppepers = new MyApp.Views.SearchResults({
-      
+
       el: this.$el.find('#hotpepper_list'),
       tmpl: MyApp.Templates.hotpepper,
       collections: new MyApp.Collections.HotpepperList(),
       service: 'hotpepper'
-      
+
     });
-    
+
     //Globalイベントをハンドリング
     MyApp.mediator.on('search', this.selectTab);
 
   },
-  
+
   selectTab: function(search){
-  
+
     $('a[href^=#' + search.service + ']').tab('show');
-  
+
   }
 
 });
@@ -943,7 +941,7 @@ Globalイベントの`search:{{サービス名}}`イベントをハンドリン�
 MyApp.Views.SearchResults = Backbone.View.extend({
 
  initialize: function () {
-    
+
     _.bindAll(this);
 
     this.collections = this.options.collections;
@@ -955,10 +953,10 @@ MyApp.Views.SearchResults = Backbone.View.extend({
 
     //Localイベントをハンドリング
     this.listenTo(this.collections, 'reset', this.render);
-    
+
   },
-  
-  
+
+
   search: function(search){
 
     this.collections.search(search);
@@ -972,7 +970,7 @@ MyApp.Views.SearchResults = Backbone.View.extend({
     }));
 
   }
-  
+
 });
 ````
 
@@ -1107,22 +1105,22 @@ MyApp.Views.History = Backbone.View.extend({
 
   events: {
     'click .btn_delete': 'removeHistory',
-    
+
     //履歴クリック時のLocalイベントを監視して、searchHistory()を呼び出す
     'click .history_contents': 'searchHistory'
   },
 
   // some ...
-  
+
   searchHistory: function(e){
-  
+
     var history = this._getHistory(e);
-    
+
     //Globalイベント「historySearch」を発火する
     MyApp.mediator.trigger('historySearch', history);
-    MyApp.mediator.trigger('historySearch:' + history.service, history);  
+    MyApp.mediator.trigger('historySearch:' + history.service, history);
   },
-  
+
   // some ...
 
 });
@@ -1140,12 +1138,12 @@ MyApp.Views.Tabs = Backbone.View.extend({
   initialize: function () {
 
     // some ...
-    
+
     //履歴クリック時のGlobalイベントを監視して、selectTab()を呼び出す
     MyApp.mediator.on('search historySearch', this.selectTab);
 
   },
-  
+
   // some ...
 
 });
@@ -1159,20 +1157,20 @@ Globalイベント`historySearch:{{サービス名}}`をハンドリングして
 MyApp.Views.SearchResults = Backbone.View.extend({
 
   initialize: function () {
-    
+
     // some ...
-    
+
     MyApp.mediator.on('search:' + this.service, this.search);
-    
+
     //履歴クリック時のGlobalイベントをハンドリングして、search()を呼び出す
     MyApp.mediator.on('historySearch:' + this.service, this.search);
 
     this.listenTo(this.collections, 'reset', this.render);
-    
+
   },
-  
+
   // some ...
-  
+
 ````
 
 これで、検索履歴から再検索できるようになりました。
@@ -1212,12 +1210,12 @@ MyApp.Views.Tabs = Backbone.View.extend({
   changeTab: function (e) {
 
     var service = this._getService(e.currentTarget);
-    
+
     //Globalイベント「changeTab」を発火する
     MyApp.mediator.trigger('changeTab', service);
 
   },
-  
+
   // some ...
 
   _getService: function (tab) {
@@ -1250,7 +1248,7 @@ MyApp.Views.History = Backbone.View.extend({
     this.listenTo(this.searches, 'add remove', this.render);
 
   },
-  
+
   // some ...
 
   searchCurrentHistory: function (service) {
@@ -1261,11 +1259,11 @@ MyApp.Views.History = Backbone.View.extend({
     historys = this.searches.where({
       service: service
     });
-    
+
     if (historys.length) {
 
       history = historys[0].attributes;
-      
+
       //Globalイベント「historySearch」を発火する
       MyApp.mediator.trigger('historySearch', history);
       MyApp.mediator.trigger('historySearch:' + history.service, history);
@@ -1273,7 +1271,7 @@ MyApp.Views.History = Backbone.View.extend({
     }
 
   },
-  
+
   // some ...
 
 });
